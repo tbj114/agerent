@@ -60,6 +60,11 @@ def sem_analysis(
         fa = FactorAnalysis(n_components=n_factors, random_state=42)
         fa.fit(sem_data_scaled)
         
+        # 使用PCA计算解释方差比例
+        from sklearn.decomposition import PCA
+        pca = PCA(n_components=n_factors)
+        pca.fit(sem_data_scaled)
+        
         # 计算拟合指数（简化处理）
         fit_indices = {
             "chi2": 10.0,  # 模拟值
@@ -86,8 +91,12 @@ def sem_analysis(
         # 计算R平方值
         r_squared = {}
         for factor in model_spec.keys():
-            # 简化处理，使用因子解释方差
-            r_squared[factor] = fa.explained_variance_ratio_[list(model_spec.keys()).index(factor)]
+            # 简化处理，使用PCA的解释方差比例
+            factor_index = list(model_spec.keys()).index(factor)
+            if factor_index < len(pca.explained_variance_ratio_):
+                r_squared[factor] = pca.explained_variance_ratio_[factor_index]
+            else:
+                r_squared[factor] = 0.0
         
         # 计算残差
         residuals = {

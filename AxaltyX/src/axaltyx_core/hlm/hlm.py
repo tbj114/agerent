@@ -16,8 +16,8 @@ def hierarchical_linear_model(data: pd.DataFrame, dependent_var: str, level1_var
         n_obs = len(data)
         
         # 计算组内均值
-        group_means = data.groupby(group_var)[level1_vars + [dependent_var]].mean().reset_index()
-        group_means.columns = [group_var] + [f"{var}_mean" for var in level1_vars] + [f"{dependent_var}_mean"]
+        group_means = data.groupby(group_var)[level1_vars + level2_vars + [dependent_var]].mean().reset_index()
+        group_means.columns = [group_var] + [f"{var}_mean" for var in level1_vars] + level2_vars + [f"{dependent_var}_mean"]
         
         # 合并组内均值到原始数据
         data_merged = data.merge(group_means, on=group_var, how='left')

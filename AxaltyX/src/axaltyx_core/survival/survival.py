@@ -48,14 +48,23 @@ def kaplan_meier(
                 km_fitters[group] = kmf
                 
                 # 生成生存表
+                event_table = kmf.event_table
+                # 计算标准误差（简化处理）
+                se = np.sqrt(kmf.survival_function_['KM_estimate'] * (1 - kmf.survival_function_['KM_estimate']) / event_table['at_risk'])
+                
+                # 获取置信区间列名
+                ci_columns = list(kmf.confidence_interval_.columns)
+                lower_ci_col = ci_columns[0] if ci_columns else 'KM_estimate_lower_95'
+                upper_ci_col = ci_columns[1] if len(ci_columns) > 1 else 'KM_estimate_upper_95'
+                
                 survival_table = pd.DataFrame({
                     "Time": kmf.timeline,
-                    "At Risk": kmf.at_risk,
-                    "Events": kmf.events,
+                    "At Risk": event_table['at_risk'],
+                    "Events": event_table['observed'],
                     "Survival Probability": kmf.survival_function_['KM_estimate'],
-                    "Standard Error": kmf.survival_function_['KM_estimate'].values * np.sqrt(kmf.variance_['KM_estimate'].values),
-                    "Lower CI": kmf.confidence_interval_['KM_estimate_lower_'+str(int(conf_level*100))],
-                    "Upper CI": kmf.confidence_interval_['KM_estimate_upper_'+str(int(conf_level*100))]
+                    "Standard Error": se,
+                    "Lower CI": kmf.confidence_interval_[lower_ci_col] if lower_ci_col in kmf.confidence_interval_ else kmf.survival_function_['KM_estimate'],
+                    "Upper CI": kmf.confidence_interval_[upper_ci_col] if upper_ci_col in kmf.confidence_interval_ else kmf.survival_function_['KM_estimate']
                 })
                 survival_tables[group] = survival_table
                 
@@ -66,8 +75,8 @@ def kaplan_meier(
                 plot_data[group] = {
                     "time": kmf.timeline.tolist(),
                     "survival": kmf.survival_function_['KM_estimate'].tolist(),
-                    "ci_lower": kmf.confidence_interval_['KM_estimate_lower_'+str(int(conf_level*100))].tolist(),
-                    "ci_upper": kmf.confidence_interval_['KM_estimate_upper_'+str(int(conf_level*100))].tolist()
+                    "ci_lower": kmf.confidence_interval_[lower_ci_col].tolist(),
+                    "ci_upper": kmf.confidence_interval_[upper_ci_col].tolist()
                 }
             
             # 执行对数秩检验
@@ -89,14 +98,23 @@ def kaplan_meier(
             kmf.fit(survival_data[time_var], survival_data[event_var], alpha=1-conf_level)
             
             # 生成生存表
+            event_table = kmf.event_table
+            # 计算标准误差（简化处理）
+            se = np.sqrt(kmf.survival_function_['KM_estimate'] * (1 - kmf.survival_function_['KM_estimate']) / event_table['at_risk'])
+            
+            # 获取置信区间列名
+            ci_columns = list(kmf.confidence_interval_.columns)
+            lower_ci_col = ci_columns[0] if ci_columns else 'KM_estimate_lower_95'
+            upper_ci_col = ci_columns[1] if len(ci_columns) > 1 else 'KM_estimate_upper_95'
+            
             survival_table = pd.DataFrame({
                 "Time": kmf.timeline,
-                "At Risk": kmf.at_risk,
-                "Events": kmf.events,
+                "At Risk": event_table['at_risk'],
+                "Events": event_table['observed'],
                 "Survival Probability": kmf.survival_function_['KM_estimate'],
-                "Standard Error": kmf.survival_function_['KM_estimate'].values * np.sqrt(kmf.variance_['KM_estimate'].values),
-                "Lower CI": kmf.confidence_interval_['KM_estimate_lower_'+str(int(conf_level*100))],
-                "Upper CI": kmf.confidence_interval_['KM_estimate_upper_'+str(int(conf_level*100))]
+                "Standard Error": se,
+                "Lower CI": kmf.confidence_interval_[lower_ci_col] if lower_ci_col in kmf.confidence_interval_ else kmf.survival_function_['KM_estimate'],
+                "Upper CI": kmf.confidence_interval_[upper_ci_col] if upper_ci_col in kmf.confidence_interval_ else kmf.survival_function_['KM_estimate']
             })
             combined_survival_table = survival_table
             
@@ -111,8 +129,8 @@ def kaplan_meier(
                 "Overall": {
                     "time": kmf.timeline.tolist(),
                     "survival": kmf.survival_function_['KM_estimate'].tolist(),
-                    "ci_lower": kmf.confidence_interval_['KM_estimate_lower_'+str(int(conf_level*100))].tolist(),
-                    "ci_upper": kmf.confidence_interval_['KM_estimate_upper_'+str(int(conf_level*100))].tolist()
+                    "ci_lower": kmf.confidence_interval_[lower_ci_col].tolist(),
+                    "ci_upper": kmf.confidence_interval_[upper_ci_col].tolist()
                 }
             }
         

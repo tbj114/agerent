@@ -52,12 +52,15 @@ def simple_correspondence(
         standardized_residuals = residuals / np.sqrt(np.outer(row_margins, col_margins))
         
         # 使用PCA进行维度约简
-        pca = PCA(n_components=n_dimensions)
-        row_scores = pca.fit_transform(standardized_residuals)
-        col_scores = pca.transform(standardized_residuals.T)
+        pca_row = PCA(n_components=n_dimensions)
+        row_scores = pca_row.fit_transform(standardized_residuals)
+        
+        # 为列变量创建单独的PCA模型
+        pca_col = PCA(n_components=n_dimensions)
+        col_scores = pca_col.fit_transform(standardized_residuals.T)
         
         # 计算奇异值
-        singular_values = pca.singular_values_
+        singular_values = pca_row.singular_values_
         
         # 构建结果
         row_scores_df = pd.DataFrame(

@@ -50,7 +50,11 @@ def discriminant_analysis(
         lda.fit(X_scaled, y)
         
         # 提取结果
-        n_components = lda.n_components_
+        try:
+            n_components = lda.n_components_
+        except AttributeError:
+            # 如果n_components_属性不存在，使用类别数量-1
+            n_components = len(y.unique()) - 1
         
         # 计算特征值和贡献率
         eigenvalues = lda.explained_variance_ratio_ * 100
@@ -94,9 +98,9 @@ def discriminant_analysis(
         classification_functions = pd.DataFrame(
             lda.coef_,
             index=y.unique(),
-            columns=predictor_vars + ["Intercept"]
+            columns=predictor_vars
         )
-        classification_functions["Intercept"] = lda.intercept_
+        classification_functions.insert(0, "Intercept", lda.intercept_)
         
         # 预测结果
         y_pred = lda.predict(X_scaled)
