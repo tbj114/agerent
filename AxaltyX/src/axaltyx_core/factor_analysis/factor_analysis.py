@@ -4,7 +4,7 @@ from scipy import stats
 from sklearn.decomposition import FactorAnalysis, PCA
 from sklearn.preprocessing import StandardScaler
 from statsmodels.stats.diagnostic import lilliefors
-from statsmodels.stats.correlation import corr_nearest
+# 移除对statsmodels.stats.correlation的依赖
 from typing import Dict, Any, List, Optional
 
 
