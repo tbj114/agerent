@@ -1,0 +1,82 @@
+
+[build-system]
+requires = ["setuptools&gt;=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "axaltyx"
+version = "1.0.0"
+authors = [
+    {name = "TBJ114"},
+]
+description = "专业级桌面统计软件，功能对标SPSS标准版"
+readme = "README.md"
+requires-python = "&gt;=3.11"
+license = {text = "MIT"}
+keywords = ["statistics", "data-analysis", "spss", "python"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "PyQt6&gt;=6.5",
+    "numpy&gt;=1.24",
+    "scipy&gt;=1.10",
+    "pandas&gt;=2.0",
+    "scikit-learn&gt;=1.3",
+    "statsmodels&gt;=0.14",
+    "lifelines&gt;=0.27",
+    "matplotlib&gt;=3.7",
+    "plotly&gt;=5.15",
+    "pyecharts&gt;=2.0",
+    "openpyxl&gt;=3.1",
+    "pyreadstat&gt;=1.2",
+    "jieba&gt;=0.42",
+]
+
+[project.optional-dependencies]
+ml = [
+    "torch&gt;=2.0",
+]
+dev = [
+    "pytest&gt;=7.4",
+    "pytest-qt&gt;=4.2",
+    "black&gt;=23.0",
+    "ruff&gt;=0.1",
+    "mypy&gt;=1.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/TBJ114/AxaltyX"
+Documentation = "https://github.com/TBJ114/AxaltyX/docs"
+Repository = "https://github.com/TBJ114/AxaltyX"
+Issues = "https://github.com/TBJ114/AxaltyX/issues"
+
+[project.scripts]
+axaltyx = "axaltyx_gui.app:main"
+
+[tool.setuptools]
+packages = ["axaltyx_core", "axaltyx_gui", "axaltyx_bridge", "axaltyx_i18n", "axaltyx_plot"]
+package-dir = {"" = "src"}
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "W", "I", "N", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+

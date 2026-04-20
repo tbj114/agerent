@@ -1,0 +1,18 @@
+
+PyQt6&gt;=6.5
+numpy&gt;=1.24
+scipy&gt;=1.10
+pandas&gt;=2.0
+scikit-learn&gt;=1.3
+statsmodels&gt;=0.14
+lifelines&gt;=0.27
+matplotlib&gt;=3.7
+plotly&gt;=5.15
+pyecharts&gt;=2.0
+openpyxl&gt;=3.1
+pyreadstat&gt;=1.2
+jieba&gt;=0.42
+
+# 可选依赖（机器学习）
+torch&gt;=2.0; python_version &gt;= '3.8'
+
