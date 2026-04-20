@@ -85,9 +85,6 @@ def test_bridge_signals():
     """测试信号发射和槽函数调用"""
     print("=== 测试 Bridge 层信号和槽 ===")
     
-    # 创建应用
-    app = QCoreApplication(sys.argv)
-    
     # 创建模拟引擎
     core_engine = MockCoreEngine()
     plot_engine = MockPlotEngine()
@@ -148,9 +145,6 @@ def test_bridge_signals():
     controller.undo()
     
     print("\n=== 测试完成 ===")
-    
-    # 退出应用
-    app.quit()
 
 
 if __name__ == "__main__":
