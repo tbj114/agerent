@@ -76,7 +76,8 @@ def get_arco_theme():
         'legend.edgecolor': ARCO_GRAY_3,
         'patch.edgecolor': ARCO_WHITE,
         'lines.color': ARCO_PRIMARY,
-        'font.family': ['WenQuanYi Zen Hei', 'Microsoft YaHei', 'SimHei', 'sans-serif']
+        'font.family': ['WenQuanYi Zen Hei'],
+        'font.sans-serif': ['WenQuanYi Zen Hei', 'DejaVu Sans', 'sans-serif']
     }
 
 def get_arco_dark_theme():
@@ -94,7 +95,8 @@ def get_arco_dark_theme():
         'legend.edgecolor': ARCO_GRAY_6,
         'patch.edgecolor': ARCO_GRAY_8,
         'lines.color': ARCO_PRIMARY,
-        'font.family': ['WenQuanYi Zen Hei', 'Microsoft YaHei', 'SimHei', 'sans-serif']
+        'font.family': ['WenQuanYi Zen Hei'],
+        'font.sans-serif': ['WenQuanYi Zen Hei', 'DejaVu Sans', 'sans-serif']
     }
 
 def get_minimal_theme():
@@ -112,7 +114,8 @@ def get_minimal_theme():
         'legend.edgecolor': 'none',
         'patch.edgecolor': ARCO_WHITE,
         'lines.color': ARCO_PRIMARY,
-        'font.family': ['WenQuanYi Zen Hei', 'Microsoft YaHei', 'SimHei', 'sans-serif']
+        'font.family': ['WenQuanYi Zen Hei'],
+        'font.sans-serif': ['WenQuanYi Zen Hei', 'DejaVu Sans', 'sans-serif']
     }
 
 def get_theme(theme_name='arco'):
