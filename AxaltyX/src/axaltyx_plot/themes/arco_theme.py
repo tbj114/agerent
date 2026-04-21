@@ -75,7 +75,8 @@ def get_arco_theme():
         'legend.facecolor': ARCO_WHITE,
         'legend.edgecolor': ARCO_GRAY_3,
         'patch.edgecolor': ARCO_WHITE,
-        'lines.color': ARCO_PRIMARY
+        'lines.color': ARCO_PRIMARY,
+        'font.family': ['WenQuanYi Zen Hei', 'Microsoft YaHei', 'SimHei', 'sans-serif']
     }
 
 def get_arco_dark_theme():
@@ -92,7 +93,8 @@ def get_arco_dark_theme():
         'legend.facecolor': ARCO_GRAY_7,
         'legend.edgecolor': ARCO_GRAY_6,
         'patch.edgecolor': ARCO_GRAY_8,
-        'lines.color': ARCO_PRIMARY
+        'lines.color': ARCO_PRIMARY,
+        'font.family': ['WenQuanYi Zen Hei', 'Microsoft YaHei', 'SimHei', 'sans-serif']
     }
 
 def get_minimal_theme():
@@ -109,5 +111,22 @@ def get_minimal_theme():
         'legend.facecolor': 'none',
         'legend.edgecolor': 'none',
         'patch.edgecolor': ARCO_WHITE,
-        'lines.color': ARCO_PRIMARY
+        'lines.color': ARCO_PRIMARY,
+        'font.family': ['WenQuanYi Zen Hei', 'Microsoft YaHei', 'SimHei', 'sans-serif']
     }
+
+def get_theme(theme_name='arco'):
+    """获取指定主题配置
+    
+    Args:
+        theme_name: 主题名称 ('arco', 'dark', 'minimal')
+    
+    Returns:
+        主题配置字典
+    """
+    if theme_name == 'dark':
+        return get_arco_dark_theme()
+    elif theme_name == 'minimal':
+        return get_minimal_theme()
+    else:
+        return get_arco_theme()
