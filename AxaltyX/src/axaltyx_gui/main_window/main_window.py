@@ -90,11 +90,15 @@ class AxaltyXMainWindow(QMainWindow):
         self.menu_bar = AxaltyXMenuBar(self)
         main_layout = self.centralWidget().layout()
         main_layout.insertWidget(1, self.menu_bar)
+        # 连接菜单信号
+        self.menu_bar.sig_action_triggered.connect(self._on_action_triggered)
 
     def setup_toolbar(self) -> None:
         self.toolbar = AxaltyXToolBar(self)
         main_layout = self.centralWidget().layout()
         main_layout.insertWidget(2, self.toolbar)
+        # 连接工具栏信号
+        self.toolbar.sig_action_triggered.connect(self._on_action_triggered)
 
     def setup_status_bar(self) -> None:
         self.status_bar = AxaltyXStatusBar(self)
@@ -221,3 +225,103 @@ class AxaltyXMainWindow(QMainWindow):
             tab_id: 标签页ID
         """
         self.update_status(f"切换到 {tab_id} 视图")
+
+    def _on_action_triggered(self, action_text: str):
+        """处理菜单和工具栏动作
+
+        Args:
+            action_text: 动作文本
+        """
+        print(f"Action triggered: {action_text}")
+        
+        # 导入对话框
+        from src.axaltyx_gui.dialogs.settings_dialog import SettingsDialog
+        from src.axaltyx_gui.dialogs.descriptive_dialog import DescriptiveDialog
+        from src.axaltyx_gui.dialogs.frequency_dialog import FrequencyDialog
+        from src.axaltyx_gui.dialogs.correlation_dialog import CorrelationDialog
+        from src.axaltyx_gui.dialogs.anova_dialogs import AnovaDialog
+        from src.axaltyx_gui.dialogs.t_test_dialogs import TTestDialog
+        from src.axaltyx_gui.dialogs.regression_dialogs import RegressionDialog
+        from src.axaltyx_gui.dialogs.clustering_dialog import ClusteringDialog
+        from src.axaltyx_gui.dialogs.crosstabs_dialog import CrosstabsDialog
+        from src.axaltyx_gui.dialogs.nonparametric_dialogs import NonparametricDialog
+        from src.axaltyx_gui.dialogs.reliability_dialog import ReliabilityDialog
+        from src.axaltyx_gui.dialogs.survival_dialogs import SurvivalDialog
+        from src.axaltyx_gui.dialogs.factor_dialog import FactorDialog
+        
+        # 处理设置动作
+        if "选项" in action_text or "Options" in action_text:
+            dialog = SettingsDialog(self)
+            dialog.sig_settings_changed.connect(self._on_settings_changed)
+            dialog.exec()
+        
+        # 处理分析动作
+        elif "描述统计" in action_text or "Descriptive" in action_text:
+            dialog = DescriptiveDialog(self)
+            dialog.exec()
+        elif "频率" in action_text or "Frequency" in action_text:
+            dialog = FrequencyDialog(self)
+            dialog.exec()
+        elif "相关" in action_text or "Correlation" in action_text:
+            dialog = CorrelationDialog(self)
+            dialog.exec()
+        elif "方差分析" in action_text or "ANOVA" in action_text:
+            dialog = AnovaDialog(self)
+            dialog.exec()
+        elif "T检验" in action_text or "T Test" in action_text:
+            dialog = TTestDialog(self)
+            dialog.exec()
+        elif "回归" in action_text or "Regression" in action_text:
+            dialog = RegressionDialog(self)
+            dialog.exec()
+        elif "聚类" in action_text or "Clustering" in action_text:
+            dialog = ClusteringDialog(self)
+            dialog.exec()
+        elif "交叉表" in action_text or "Crosstabs" in action_text:
+            dialog = CrosstabsDialog(self)
+            dialog.exec()
+        elif "非参数" in action_text or "Nonparametric" in action_text:
+            dialog = NonparametricDialog(self)
+            dialog.exec()
+        elif "信度" in action_text or "Reliability" in action_text:
+            dialog = ReliabilityDialog(self)
+            dialog.exec()
+        elif "生存分析" in action_text or "Survival" in action_text:
+            dialog = SurvivalDialog(self)
+            dialog.exec()
+        elif "因子分析" in action_text or "Factor" in action_text:
+            dialog = FactorDialog(self)
+            dialog.exec()
+        
+        # 处理文件动作
+        elif "新建" in action_text or "New" in action_text:
+            self.new_dataset()
+        elif "打开" in action_text or "Open" in action_text:
+            self.load_data("", "")
+        elif "保存" in action_text or "Save" in action_text:
+            self.save_data("", "")
+        
+        # 处理视图动作
+        elif "数据视图" in action_text or "Data View" in action_text:
+            self.switch_tab("data_view")
+        elif "变量视图" in action_text or "Variable View" in action_text:
+            self.switch_tab("variable_view")
+        elif "输出视图" in action_text or "Output View" in action_text:
+            self.switch_tab("output_view")
+        elif "语法视图" in action_text or "Syntax View" in action_text:
+            self.switch_tab("syntax_view")
+        
+        # 处理主题动作
+        elif "亮色主题" in action_text or "Light Theme" in action_text:
+            self.set_theme("light")
+        elif "暗色主题" in action_text or "Dark Theme" in action_text:
+            self.set_theme("dark")
+
+    def _on_settings_changed(self, settings: dict):
+        """处理设置变更
+
+        Args:
+            settings: 新的设置
+        """
+        print(f"Settings changed: {settings}")
+        # 这里可以添加设置处理逻辑

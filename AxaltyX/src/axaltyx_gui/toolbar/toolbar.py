@@ -1,9 +1,13 @@
 from PyQt6.QtWidgets import QToolBar
 from PyQt6.QtGui import QAction, QIcon, QPixmap
+from PyQt6.QtCore import pyqtSignal
 from src.axaltyx_i18n.manager import I18nManager
 
 class AxaltyXToolBar(QToolBar):
     """自定义工具栏"""
+
+    # 信号
+    sig_action_triggered = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -91,5 +95,7 @@ class AxaltyXToolBar(QToolBar):
     def _on_tool_action(self):
         """工具动作处理"""
         action = self.sender()
-        print(f"Tool action triggered: {action.toolTip()}")
+        action_text = action.toolTip()
+        print(f"Tool action triggered: {action_text}")
+        self.sig_action_triggered.emit(action_text)
         # 这里可以添加具体的工具处理逻辑

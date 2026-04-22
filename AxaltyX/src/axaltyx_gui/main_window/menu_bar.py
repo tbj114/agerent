@@ -1,9 +1,13 @@
 from PyQt6.QtWidgets import QMenuBar, QMenu
 from PyQt6.QtGui import QAction, QKeySequence
+from PyQt6.QtCore import pyqtSignal
 from src.axaltyx_i18n.manager import I18nManager
 
 class AxaltyXMenuBar(QMenuBar):
     """自定义菜单栏"""
+
+    # 信号
+    sig_action_triggered = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -469,5 +473,7 @@ class AxaltyXMenuBar(QMenuBar):
     def _on_menu_action(self):
         """菜单动作处理"""
         action = self.sender()
-        print(f"Menu action triggered: {action.text()}")
+        action_text = action.text()
+        print(f"Menu action triggered: {action_text}")
+        self.sig_action_triggered.emit(action_text)
         # 这里可以添加具体的菜单处理逻辑
