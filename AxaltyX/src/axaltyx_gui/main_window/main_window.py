@@ -1,7 +1,9 @@
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QMenuBar, QStatusBar, QMenu
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QStatusBar
 from PyQt6.QtGui import QIcon, QFont
 from PyQt6.QtCore import pyqtSignal, Qt
 from .title_bar import AxaltyXTitleBar
+from .menu_bar import AxaltyXMenuBar
+from src.axaltyx_gui.toolbar.toolbar import AxaltyXToolBar
 
 class AxaltyXMainWindow(QMainWindow):
     """主窗口，承载所有子组件"""
@@ -31,10 +33,6 @@ class AxaltyXMainWindow(QMainWindow):
         # 添加自定义标题栏
         main_layout.addWidget(self.title_bar)
 
-        # 添加菜单栏
-        self.setup_menu_bar()
-        main_layout.addWidget(self.menu_bar)
-
         # 主内容区域
         content_widget = QWidget()
         content_layout = QHBoxLayout(content_widget)
@@ -60,6 +58,10 @@ class AxaltyXMainWindow(QMainWindow):
 
         self.setCentralWidget(central_widget)
 
+        # 添加菜单栏和工具栏
+        self.setup_menu_bar()
+        self.setup_toolbar()
+
         # 连接标题栏信号
         self.title_bar.sig_minimize.connect(self.showMinimized)
         self.title_bar.sig_maximize.connect(self.toggle_maximize)
@@ -72,19 +74,14 @@ class AxaltyXMainWindow(QMainWindow):
             self.showMaximized()
 
     def setup_menu_bar(self) -> None:
-        self.menu_bar = QMenuBar()
-        self.menu_bar.setFixedHeight(28)
-        
-        # 创建菜单项
-        menu_names = ["文件(F)", "编辑(E)", "视图(V)", "数据(D)", "分析(A)", "图形(G)", "工具(T)", "帮助(H)"]
-        
-        for name in menu_names:
-            menu = QMenu(name, self)
-            self.menu_bar.addMenu(menu)
+        self.menu_bar = AxaltyXMenuBar(self)
+        main_layout = self.centralWidget().layout()
+        main_layout.insertWidget(1, self.menu_bar)
 
     def setup_toolbar(self) -> None:
-        # 工具栏实现
-        pass
+        self.toolbar = AxaltyXToolBar(self)
+        main_layout = self.centralWidget().layout()
+        main_layout.insertWidget(2, self.toolbar)
 
     def setup_status_bar(self) -> None:
         self.status_bar = QStatusBar()
