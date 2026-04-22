@@ -16,6 +16,7 @@ class BridgeSignals(QObject):
 
     # ---- 分析操作信号 ----
     sig_analysis_requested = pyqtSignal(str, dict)        # (analysis_name, params)
+    sig_analysis_cancel_requested = pyqtSignal(str)       # analysis_name
     sig_analysis_started = pyqtSignal(str)                # analysis_name
     sig_analysis_progress = pyqtSignal(str, int, int)     # (analysis_name, current, total)
     sig_analysis_completed = pyqtSignal(str, dict)        # (analysis_name, results)
