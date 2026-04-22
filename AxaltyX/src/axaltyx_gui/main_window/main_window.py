@@ -4,6 +4,11 @@ from PyQt6.QtCore import pyqtSignal, Qt
 from .title_bar import AxaltyXTitleBar
 from .menu_bar import AxaltyXMenuBar
 from src.axaltyx_gui.toolbar.toolbar import AxaltyXToolBar
+from src.axaltyx_gui.tab_system.tab_widget import AxaltyXTabWidget
+from src.axaltyx_gui.tab_system.data_tab import DataTab
+from src.axaltyx_gui.tab_system.variable_tab import VariableTab
+from src.axaltyx_gui.tab_system.output_tab import OutputTab
+from src.axaltyx_gui.tab_system.syntax_tab import SyntaxTab
 
 class AxaltyXMainWindow(QMainWindow):
     """主窗口，承载所有子组件"""
@@ -100,7 +105,33 @@ class AxaltyXMainWindow(QMainWindow):
         self.right_panel.setStyleSheet("background-color: #FFFFFF; border-left: 1px solid #E5E6EB;")
 
     def setup_central_widget(self) -> None:
+        # 创建标签页系统
+        self.tab_widget = AxaltyXTabWidget()
+        
+        # 创建数据视图标签页
+        self.data_tab = DataTab()
+        self.tab_widget.add_tab(self.data_tab, "data_view", "数据视图", closable=False)
+        
+        # 创建变量视图标签页
+        self.variable_tab = VariableTab(self.data_tab.get_data())
+        self.tab_widget.add_tab(self.variable_tab, "variable_view", "变量视图", closable=False)
+        
+        # 创建输出视图标签页
+        self.output_tab = OutputTab()
+        self.tab_widget.add_tab(self.output_tab, "output_view", "输出视图", closable=False)
+        
+        # 创建语法视图标签页
+        self.syntax_tab = SyntaxTab()
+        self.tab_widget.add_tab(self.syntax_tab, "syntax_view", "语法视图", closable=False)
+        
+        # 设置标签页切换信号
+        self.tab_widget.sig_tab_changed.connect(self._on_tab_changed)
+        
+        # 设置中心组件
         self.central_widget = QWidget()
+        layout = QVBoxLayout(self.central_widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.tab_widget)
         self.central_widget.setStyleSheet("background-color: #F7F8FA;")
 
     def load_data(self, path: str, file_type: str) -> None:
@@ -146,3 +177,11 @@ class AxaltyXMainWindow(QMainWindow):
     def update_status(self, message: str, timeout: int = 0) -> None:
         # 更新状态栏消息
         self.status_bar.showMessage(message, timeout)
+
+    def _on_tab_changed(self, tab_id: str):
+        """标签页切换处理
+
+        Args:
+            tab_id: 标签页ID
+        """
+        self.update_status(f"切换到 {tab_id} 视图")
