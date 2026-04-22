@@ -129,13 +129,8 @@ class BridgeController(QObject):
 
     def cancel_analysis(self, analysis_name: str) -> None:
         """取消分析"""
-        # 实现取消分析逻辑
-        if self._analysis_slots and hasattr(self._analysis_slots, 'cancel_analysis'):
-            self._analysis_slots.cancel_analysis(analysis_name)
-        else:
-            # 发送取消分析信号
-            if hasattr(self._signals, 'sig_analysis_cancel_requested'):
-                self._signals.sig_analysis_cancel_requested.emit(analysis_name)
+        # 这里简化处理，实际应实现取消逻辑
+        pass
 
     def get_analysis_names(self) -> list[str]:
         """获取分析名称列表"""

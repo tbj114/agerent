@@ -557,14 +557,8 @@ class AxaltyXMainWindow(QMainWindow):
         # 应用缩放级别
         if 'zoom_level' in appearance:
             zoom = appearance['zoom_level'] / 100.0
-            # 应用缩放逻辑
-            if hasattr(self, 'central_widget'):
-                # 这里可以添加实际的缩放逻辑
-                # 例如：使用 QTransform 进行缩放
-                # transform = QTransform()
-                # transform.scale(zoom, zoom)
-                # self.central_widget.setTransform(transform)
-                pass
+            # 这里应该添加实际的缩放逻辑
+            pass
         
         # 应用表格字体
         if 'table_font' in appearance and hasattr(self, 'data_tab'):
@@ -582,13 +576,8 @@ class AxaltyXMainWindow(QMainWindow):
         
         # 应用虚拟滚动
         if 'virtual_scroll' in performance:
-            # 应用虚拟滚动设置逻辑
-            virtual_scroll = performance['virtual_scroll']
-            # 这里可以添加实际的虚拟滚动设置逻辑
-            # 例如：设置表格的虚拟滚动
-            if hasattr(self, 'data_tab'):
-                # self.data_tab.set_virtual_scroll(virtual_scroll)
-                pass
+            # 这里应该添加实际的虚拟滚动设置逻辑
+            pass
         
         # 应用缓存大小
         if 'cache_size' in performance and hasattr(self, '_cache_manager'):
