@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QStandardItemModel, QIcon
-from axaltyx_i18n.manager import I18nManager
+from src.axaltyx_i18n.manager import I18nManager
 
 
 class NavigationPanel(QWidget):

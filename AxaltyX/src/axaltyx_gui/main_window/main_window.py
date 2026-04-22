@@ -9,6 +9,7 @@ from src.axaltyx_gui.tab_system.data_tab import DataTab
 from src.axaltyx_gui.tab_system.variable_tab import VariableTab
 from src.axaltyx_gui.tab_system.output_tab import OutputTab
 from src.axaltyx_gui.tab_system.syntax_tab import SyntaxTab
+from src.axaltyx_gui.panels import NavigationPanel, PropertyPanel
 
 class AxaltyXMainWindow(QMainWindow):
     """主窗口，承载所有子组件"""
@@ -95,14 +96,32 @@ class AxaltyXMainWindow(QMainWindow):
         self.setStatusBar(self.status_bar)
 
     def setup_left_panel(self) -> None:
-        self.left_panel = QWidget()
-        self.left_panel.setFixedWidth(200)
-        self.left_panel.setStyleSheet("background-color: #FFFFFF; border-right: 1px solid #E5E6EB;")
+        self.left_panel = NavigationPanel(self)
+        self.left_panel.sig_analysis_selected.connect(self._on_analysis_selected)
 
     def setup_right_panel(self) -> None:
-        self.right_panel = QWidget()
-        self.right_panel.setFixedWidth(240)
-        self.right_panel.setStyleSheet("background-color: #FFFFFF; border-left: 1px solid #E5E6EB;")
+        self.right_panel = PropertyPanel(self)
+        self.right_panel.sig_variable_changed.connect(self._on_variable_changed)
+        
+    def _on_analysis_selected(self, analysis_id, params):
+        """处理分析选择事件
+        
+        Args:
+            analysis_id: 分析ID
+            params: 分析参数
+        """
+        self.update_status(f"选中分析: {analysis_id}")
+        # 触发分析请求信号
+        self.sig_analysis_requested.emit(analysis_id, params)
+        
+    def _on_variable_changed(self, var_name, metadata):
+        """处理变量属性变更事件
+        
+        Args:
+            var_name: 变量名称
+            metadata: 变量元数据
+        """
+        self.update_status(f"变量属性已更新: {var_name}")
 
     def setup_central_widget(self) -> None:
         # 创建标签页系统

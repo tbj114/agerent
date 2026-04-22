@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import (
     QSpinBox, QPushButton, QGroupBox, QScrollArea, QLabel
 )
 from PyQt6.QtCore import pyqtSignal, Qt
-from axaltyx_i18n.manager import I18nManager
+from src.axaltyx_i18n.manager import I18nManager
 
 
 class PropertyPanel(QWidget):
