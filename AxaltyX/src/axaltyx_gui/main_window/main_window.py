@@ -42,14 +42,22 @@ class AxaltyXMainWindow(QMainWindow):
         from src.axaltyx_i18n.manager import I18nManager
         from src.axaltyx_gui.settings.theme_manager import ThemeManager
         
+        # 创建核心引擎实例
         self.core_engine = CoreEngine()
+        
+        # 创建绘图引擎实例
         self.plot_engine = PlotEngine()
+        
+        # 创建国际化管理器实例
         self.i18n_manager = I18nManager()
+        
+        # 创建主题管理器实例
         self.theme_manager = ThemeManager()
         
         # 初始化桥接控制器
         from src.axaltyx_bridge.controller import BridgeController
         self.bridge = BridgeController()
+        # 调用initialize方法，传入核心引擎、绘图引擎、国际化管理器和主题管理器
         self.bridge.initialize(self.core_engine, self.plot_engine, self.i18n_manager, self.theme_manager)
         
         # 连接桥接信号
