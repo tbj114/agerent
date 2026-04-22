@@ -1,13 +1,31 @@
 import sys
 import time
+import logging
 from PyQt6.QtWidgets import QApplication
 from src.axaltyx_gui.splash.splash_screen import AxaltyXSplashScreen
 from src.axaltyx_gui.main_window.main_window import AxaltyXMainWindow
+
+# 配置日志系统
+def configure_logging():
+    """配置应用日志"""
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.StreamHandler(sys.stdout),
+            # 可以添加文件处理器
+        ]
+    )
+    logger = logging.getLogger(__name__)
+    logger.info("Application started")
 
 class AxaltyXApp:
     """AxaltyX 应用入口"""
 
     def __init__(self):
+        # 配置日志
+        configure_logging()
+        
         self.app = QApplication(sys.argv)
         self.splash = AxaltyXSplashScreen()
         self.main_window = None

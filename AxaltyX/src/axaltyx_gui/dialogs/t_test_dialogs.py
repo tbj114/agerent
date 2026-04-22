@@ -109,10 +109,21 @@ class TTestDialog(AnalysisDialogBase):
     def _on_paired_variables_selected(self, variables):
         """配对变量选择变化处理"""
         # 配对变量处理
-        # 这里可以添加配对变量选择的逻辑
-        # 例如：检查配对变量的数量是否为偶数
-        # 或者检查配对变量的类型是否一致
-        pass
+        self.selected_paired_vars = variables
+        
+        # 检查配对变量数量是否为偶数
+        if len(variables) > 0 and len(variables) % 2 != 0:
+            self.show_warning("配对变量需要成对选择，请确保变量数量为偶数")
+            return
+        
+        # 检查变量数据类型是否为数值型
+        # 这里应该添加实际的数据类型检查逻辑
+        # 假设我们有一个_data模型可以获取变量类型
+        if hasattr(self, '_data'):
+            for var in variables:
+                var_type = self._data.get_variable_type(var)
+                if not var_type in ['int', 'float', 'numeric']:
+                    self.show_warning(f"变量 {var} 不是数值类型，可能不适合做配对t检验")
 
     def _on_test_type_changed(self, button):
         """测试类型变化处理"""

@@ -289,38 +289,66 @@ class SettingsDialog(QDialog):
         Returns:
             dict: 设置字典
         """
-        # 这里需要从各个控件中获取值
-        # 为了简化，这里返回一个示例字典
+        # 语言映射
+        lang_map = {
+            '简体中文': 'zh_CN',
+            'English': 'en_US',
+            '日本語': 'ja_JP'
+        }
+        
+        # 主题映射
+        theme_map = {
+            '亮色主题': 'light',
+            '暗色主题': 'dark'
+        }
+        
+        # 启动动作映射
+        startup_map = {
+            '显示欢迎屏幕': 'welcome',
+            '打开空白数据集': 'empty',
+            '打开最近文件': 'recent'
+        }
+        
+        # 缩放级别映射
+        zoom_map = {
+            '75%': 75,
+            '100%': 100,
+            '125%': 125,
+            '150%': 150,
+            '200%': 200
+        }
+        
+        # 获取设置值
         return {
             'general': {
-                'language': 'zh_CN',
-                'theme': 'light',
-                'startup_action': 'welcome',
-                'auto_save': True,
-                'auto_save_interval': 5,
-                'recent_files_count': 10,
-                'decimal_places': 2
+                'language': lang_map.get(self.language_combo.currentText(), 'zh_CN'),
+                'theme': theme_map.get(self.theme_combo.currentText(), 'light'),
+                'startup_action': startup_map.get(self.startup_combo.currentText(), 'welcome'),
+                'auto_save': self.auto_save_checkbox.isChecked(),
+                'auto_save_interval': self.auto_save_interval_spin.value(),
+                'recent_files_count': self.recent_files_spin.value(),
+                'decimal_places': self.decimal_places_spin.value()
             },
             'appearance': {
-                'font_size': 14,
-                'table_font': 'Microsoft YaHei',
-                'zoom_level': 100
+                'font_size': self.font_size_spin.value(),
+                'table_font': self.font_combo.currentText(),
+                'zoom_level': zoom_map.get(self.zoom_combo.currentText(), 100)
             },
             'data': {
-                'default_rows': 100,
-                'default_cols': 20,
-                'decimal_separator': '.',
-                'thousand_separator': ','
+                'default_rows': self.default_rows_spin.value(),
+                'default_cols': self.default_cols_spin.value(),
+                'decimal_separator': self.decimal_separator_combo.currentText(),
+                'thousand_separator': self.thousand_separator_combo.currentText()
             },
             'output': {
-                'chart_format': 'PNG',
-                'chart_dpi': 300,
-                'table_format': 'HTML'
+                'chart_format': self.chart_format_combo.currentText(),
+                'chart_dpi': self.chart_dpi_spin.value(),
+                'table_format': self.table_format_combo.currentText()
             },
             'performance': {
-                'max_threads': 4,
-                'virtual_scroll': True,
-                'cache_size': 100
+                'max_threads': self.max_threads_spin.value(),
+                'virtual_scroll': self.virtual_scroll_checkbox.isChecked(),
+                'cache_size': self.cache_size_spin.value()
             }
         }
 

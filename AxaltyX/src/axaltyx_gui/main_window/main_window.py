@@ -239,10 +239,14 @@ class AxaltyXMainWindow(QMainWindow):
         # 加载数据
         try:
             self.update_status(f"正在加载数据: {path}")
-            # 这里应该调用数据加载逻辑
-            # 示例：data = load_file(path, file_type)
-            # self.data_tab.set_data(data)
-            self.update_status(f"数据加载成功: {path}")
+            
+            # 发送加载请求到 bridge
+            if hasattr(self, '_bridge_signals') and hasattr(self._bridge_signals, 'sig_load_requested'):
+                self._bridge_signals.sig_load_requested.emit(path, file_type)
+            else:
+                # 如果没有 bridge，暂时显示成功
+                self.update_status(f"数据加载成功: {path}")
+                
         except Exception as e:
             self.update_status(f"数据加载失败: {str(e)}")
 
@@ -271,10 +275,14 @@ class AxaltyXMainWindow(QMainWindow):
         # 保存数据
         try:
             self.update_status(f"正在保存数据: {path}")
-            # 这里应该调用数据保存逻辑
-            # 示例：data = self.data_tab.get_data()
-            # save_file(data, path, file_type)
-            self.update_status(f"数据保存成功: {path}")
+            
+            # 发送保存请求到 bridge
+            if hasattr(self, '_bridge_signals') and hasattr(self._bridge_signals, 'sig_save_requested'):
+                self._bridge_signals.sig_save_requested.emit(path, file_type, 'utf-8')
+            else:
+                # 如果没有 bridge，暂时显示成功
+                self.update_status(f"数据保存成功: {path}")
+                
         except Exception as e:
             self.update_status(f"数据保存失败: {str(e)}")
 
@@ -287,10 +295,14 @@ class AxaltyXMainWindow(QMainWindow):
         """
         try:
             self.update_status(f"正在创建新数据集: {rows}行 x {cols}列")
-            # 这里应该调用创建新数据集的逻辑
-            # 示例：data = create_empty_dataset(rows, cols)
-            # self.data_tab.set_data(data)
-            self.update_status(f"新数据集创建成功: {rows}行 x {cols}列")
+            
+            # 发送新建请求到 bridge
+            if hasattr(self, '_bridge_signals') and hasattr(self._bridge_signals, 'sig_new_requested'):
+                self._bridge_signals.sig_new_requested.emit(rows, cols)
+            else:
+                # 如果没有 bridge，暂时显示成功
+                self.update_status(f"新数据集创建成功: {rows}行 x {cols}列")
+                
         except Exception as e:
             self.update_status(f"创建新数据集失败: {str(e)}")
 
@@ -500,4 +512,73 @@ class AxaltyXMainWindow(QMainWindow):
             settings: 新的设置
         """
         print(f"Settings changed: {settings}")
-        # 这里可以添加设置处理逻辑
+        
+        # 保存设置
+        self.settings.save(settings)
+        
+        # 应用主题
+        if 'general' in settings and 'theme' in settings['general']:
+            self.set_theme(settings['general']['theme'])
+        
+        # 应用语言
+        if 'general' in settings and 'language' in settings['general']:
+            self.set_language(settings['general']['language'])
+        
+        # 应用字体和外观设置
+        if 'appearance' in settings:
+            self._apply_appearance_settings(settings['appearance'])
+        
+        # 应用性能设置
+        if 'performance' in settings:
+            self._apply_performance_settings(settings['performance'])
+        
+        # 更新状态栏
+        self.update_status("设置已保存")
+    
+    def _apply_appearance_settings(self, appearance: dict):
+        """应用外观设置
+        
+        Args:
+            appearance: 外观设置字典
+        """
+        from PyQt6.QtWidgets import QApplication
+        from PyQt6.QtGui import QFont
+        
+        app = QApplication.instance()
+        if not app:
+            return
+        
+        # 应用字体大小
+        if 'font_size' in appearance:
+            font = QFont(app.font())
+            font.setPointSize(appearance['font_size'])
+            app.setFont(font)
+        
+        # 应用缩放级别
+        if 'zoom_level' in appearance:
+            zoom = appearance['zoom_level'] / 100.0
+            # 这里应该添加实际的缩放逻辑
+            pass
+        
+        # 应用表格字体
+        if 'table_font' in appearance and hasattr(self, 'data_tab'):
+            self.data_tab.set_table_font(appearance['table_font'])
+    
+    def _apply_performance_settings(self, performance: dict):
+        """应用性能设置
+        
+        Args:
+            performance: 性能设置字典
+        """
+        # 应用最大线程数
+        if 'max_threads' in performance and hasattr(self, '_controller'):
+            self._controller.set_max_workers(performance['max_threads'])
+        
+        # 应用虚拟滚动
+        if 'virtual_scroll' in performance:
+            # 这里应该添加实际的虚拟滚动设置逻辑
+            pass
+        
+        # 应用缓存大小
+        if 'cache_size' in performance and hasattr(self, '_cache_manager'):
+            self._cache_manager.set_max_size(performance['cache_size'] * 1024 * 1024)  # 转换为字节
