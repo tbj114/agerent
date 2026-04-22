@@ -32,7 +32,7 @@ class AxaltyXApp:
         sys.exit(self.app.exec())
 
     def load_core_modules(self):
-        """加载核心模块"""
+        """模拟加载核心模块"""
         modules = [
             "Loading core modules...",
             "Initializing data engine...",
@@ -46,10 +46,6 @@ class AxaltyXApp:
             self.splash.set_progress((i + 1) * 20)
             time.sleep(0.5)  # 模拟加载时间
             self.app.processEvents()
-        
-        # 初始化桥接控制器
-        from src.axaltyx_bridge.controller import BridgeController
-        bridge = BridgeController()
 
 if __name__ == "__main__":
     app = AxaltyXApp()
