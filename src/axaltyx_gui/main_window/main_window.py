@@ -83,8 +83,13 @@ class AxaltyXMainWindow(QMainWindow):
             self.menu_bar.addMenu(menu)
 
     def setup_toolbar(self) -> None:
-        # 工具栏实现
-        pass
+        """设置工具栏"""
+        from src.axaltyx_gui.toolbar.toolbar import AxaltyXToolBar
+        self.toolbar = AxaltyXToolBar(self)
+        self.addToolBar(self.toolbar)
+        
+        # 连接工具栏信号
+        self.toolbar.sig_action_triggered.connect(self._on_action_triggered)
 
     def setup_status_bar(self) -> None:
         self.status_bar = QStatusBar()
@@ -107,24 +112,179 @@ class AxaltyXMainWindow(QMainWindow):
         self.central_widget.setStyleSheet("background-color: #F7F8FA;")
 
     def load_data(self, path: str, file_type: str) -> None:
-        # 数据加载实现
-        pass
+        """加载数据
+
+        Args:
+            path: 文件路径
+            file_type: 文件类型
+        """
+        try:
+            # 这里应该实现实际的数据加载逻辑
+            # 例如使用pandas读取文件
+            import pandas as pd
+            
+            if file_type == "csv":
+                data = pd.read_csv(path)
+            elif file_type == "excel":
+                data = pd.read_excel(path)
+            elif file_type == "json":
+                data = pd.read_json(path)
+            else:
+                raise ValueError(f"不支持的文件类型: {file_type}")
+            
+            # 转换数据为字典格式
+            data_dict = {
+                "data": data.to_dict('records'),
+                "columns": list(data.columns),
+                "path": path,
+                "file_type": file_type
+            }
+            
+            # 发出数据加载完成信号
+            self.sig_data_loaded.emit(data_dict)
+            
+            # 更新状态栏
+            self.update_status(f"成功加载数据文件: {path}")
+            
+        except Exception as e:
+            # 处理异常
+            error_message = f"加载数据失败: {str(e)}"
+            print(error_message)
+            self.update_status(error_message)
+            
+            # 发出空数据信号
+            self.sig_data_loaded.emit({"error": error_message})
 
     def save_data(self, path: str, file_type: str) -> None:
-        # 数据保存实现
-        pass
+        """保存数据
+
+        Args:
+            path: 文件路径
+            file_type: 文件类型
+        """
+        try:
+            # 获取当前数据
+            current_data = self.get_current_data()
+            
+            if current_data is None:
+                raise ValueError("没有数据可保存")
+            
+            # 这里应该实现实际的数据保存逻辑
+            # 例如使用pandas保存文件
+            import pandas as pd
+            
+            # 假设current_data是一个包含data和columns的字典
+            if isinstance(current_data, dict) and "data" in current_data and "columns" in current_data:
+                data = pd.DataFrame(current_data["data"], columns=current_data["columns"])
+            else:
+                raise ValueError("数据格式不正确")
+            
+            if file_type == "csv":
+                data.to_csv(path, index=False)
+            elif file_type == "excel":
+                data.to_excel(path, index=False)
+            elif file_type == "json":
+                data.to_json(path, orient='records')
+            else:
+                raise ValueError(f"不支持的文件类型: {file_type}")
+            
+            # 更新状态栏
+            self.update_status(f"成功保存数据文件: {path}")
+            
+        except Exception as e:
+            # 处理异常
+            error_message = f"保存数据失败: {str(e)}"
+            print(error_message)
+            self.update_status(error_message)
 
     def new_dataset(self, rows: int = 100, cols: int = 100) -> None:
-        # 新建数据集实现
-        pass
+        """新建数据集
+
+        Args:
+            rows: 行数
+            cols: 列数
+        """
+        try:
+            # 生成新的数据集
+            import pandas as pd
+            import numpy as np
+            
+            # 创建列名
+            columns = [f"Var{i+1}" for i in range(cols)]
+            
+            # 创建随机数据
+            data = np.random.randn(rows, cols)
+            df = pd.DataFrame(data, columns=columns)
+            
+            # 转换数据为字典格式
+            data_dict = {
+                "data": df.to_dict('records'),
+                "columns": columns,
+                "path": None,
+                "file_type": "new"
+            }
+            
+            # 发出数据加载完成信号
+            self.sig_data_loaded.emit(data_dict)
+            
+            # 更新状态栏
+            self.update_status(f"成功创建新数据集: {rows}行 x {cols}列")
+            
+        except Exception as e:
+            # 处理异常
+            error_message = f"创建新数据集失败: {str(e)}"
+            print(error_message)
+            self.update_status(error_message)
+            
+            # 发出空数据信号
+            self.sig_data_loaded.emit({"error": error_message})
 
     def show_analysis_dialog(self, analysis_name: str) -> None:
-        # 显示分析对话框实现
-        pass
+        """显示分析对话框
+
+        Args:
+            analysis_name: 分析名称
+        """
+        try:
+            # 这里应该实现实际的分析对话框显示逻辑
+            # 例如根据分析名称显示不同的对话框
+            print(f"显示分析对话框: {analysis_name}")
+            
+            # 发出分析请求信号
+            analysis_params = {
+                "variables": self.get_selected_variables(),
+                "options": {}
+            }
+            self.sig_analysis_requested.emit(analysis_name, analysis_params)
+            
+            # 更新状态栏
+            self.update_status(f"准备进行{analysis_name}分析")
+            
+        except Exception as e:
+            # 处理异常
+            error_message = f"显示分析对话框失败: {str(e)}"
+            print(error_message)
+            self.update_status(error_message)
 
     def switch_tab(self, tab_id: str) -> None:
-        # 切换标签页实现
-        pass
+        """切换标签页
+
+        Args:
+            tab_id: 标签页ID
+        """
+        try:
+            # 这里应该实现实际的标签页切换逻辑
+            # 例如根据tab_id切换到对应的标签页
+            print(f"切换到标签页: {tab_id}")
+            
+            # 更新状态栏
+            self.update_status(f"切换到{tab_id}视图")
+            
+        except Exception as e:
+            # 处理异常
+            error_message = f"切换标签页失败: {str(e)}"
+            print(error_message)
+            self.update_status(error_message)
 
     def set_language(self, lang_code: str) -> None:
         # 语言切换实现
@@ -133,6 +293,64 @@ class AxaltyXMainWindow(QMainWindow):
     def set_theme(self, theme_name: str) -> None:
         # 主题切换实现
         self.sig_theme_changed.emit(theme_name)
+
+    def _on_action_triggered(self, action_id: str) -> None:
+        """处理动作触发
+
+        Args:
+            action_id: 动作ID
+        """
+        try:
+            # 根据动作ID执行不同的操作
+            print(f"动作触发: {action_id}")
+            
+            # 处理文件操作
+            if action_id == "new":
+                self.new_dataset()
+            elif action_id == "open":
+                # 这里应该打开文件对话框
+                self.update_status("打开文件")
+            elif action_id == "save":
+                # 这里应该保存文件对话框
+                self.update_status("保存文件")
+            
+            # 处理视图操作
+            elif action_id == "data_view":
+                self.switch_tab("data")
+            elif action_id == "variable_view":
+                self.switch_tab("variable")
+            elif action_id == "output_view":
+                self.switch_tab("output")
+            elif action_id == "syntax_view":
+                self.switch_tab("syntax")
+            
+            # 处理分析操作
+            elif action_id == "descriptive":
+                self.show_analysis_dialog("descriptive")
+            elif action_id == "frequency":
+                self.show_analysis_dialog("frequency")
+            elif action_id == "correlation":
+                self.show_analysis_dialog("correlation")
+            
+            # 处理工具操作
+            elif action_id == "options":
+                # 这里应该打开设置对话框
+                self.update_status("打开设置")
+            
+            # 处理帮助操作
+            elif action_id == "help":
+                # 这里应该打开帮助对话框
+                self.update_status("打开帮助")
+            
+            else:
+                # 处理其他动作
+                self.update_status(f"执行操作: {action_id}")
+                
+        except Exception as e:
+            # 处理异常
+            error_message = f"执行操作失败: {str(e)}"
+            print(error_message)
+            self.update_status(error_message)
 
     def closeEvent(self, event) -> None:
         # 关闭事件处理

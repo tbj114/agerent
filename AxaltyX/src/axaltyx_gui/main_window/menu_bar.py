@@ -475,5 +475,81 @@ class AxaltyXMenuBar(QMenuBar):
         action = self.sender()
         action_text = action.text()
         print(f"Menu action triggered: {action_text}")
+        
+        # 发送信号到主窗口
         self.sig_action_triggered.emit(action_text)
-        # 这里可以添加具体的菜单处理逻辑
+        
+        # 这里添加具体的菜单处理逻辑
+        # 根据菜单文本执行不同的操作
+        if action_text == self.i18n.get_text("menu.file.new"):
+            # 新建数据集
+            pass
+        elif action_text == self.i18n.get_text("menu.file.open"):
+            # 打开文件
+            pass
+        elif action_text == self.i18n.get_text("menu.file.save"):
+            # 保存文件
+            pass
+        elif action_text == self.i18n.get_text("menu.file.save_as"):
+            # 另存为
+            pass
+        elif action_text == self.i18n.get_text("menu.file.close"):
+            # 关闭文件
+            pass
+        elif action_text == self.i18n.get_text("menu.file.export"):
+            # 导出文件
+            pass
+        elif action_text == self.i18n.get_text("menu.file.exit"):
+            # 退出程序
+            pass
+        elif action_text == self.i18n.get_text("menu.edit.undo"):
+            # 撤销操作
+            pass
+        elif action_text == self.i18n.get_text("menu.edit.redo"):
+            # 重做操作
+            pass
+        elif action_text == self.i18n.get_text("menu.edit.cut"):
+            # 剪切操作
+            pass
+        elif action_text == self.i18n.get_text("menu.edit.copy"):
+            # 复制操作
+            pass
+        elif action_text == self.i18n.get_text("menu.edit.paste"):
+            # 粘贴操作
+            pass
+        elif action_text == self.i18n.get_text("menu.view.data_view"):
+            # 数据视图
+            pass
+        elif action_text == self.i18n.get_text("menu.view.variable_view"):
+            # 变量视图
+            pass
+        elif action_text == self.i18n.get_text("menu.view.output_view"):
+            # 输出视图
+            pass
+        elif action_text == self.i18n.get_text("menu.view.syntax_view"):
+            # 语法视图
+            pass
+        elif action_text == self.i18n.get_text("menu.view.light_theme"):
+            # 亮色主题
+            pass
+        elif action_text == self.i18n.get_text("menu.view.dark_theme"):
+            # 暗色主题
+            pass
+        elif action_text == self.i18n.get_text("menu.analysis.descriptive"):
+            # 描述性统计
+            pass
+        elif action_text == self.i18n.get_text("menu.analysis.frequency"):
+            # 频率分析
+            pass
+        elif action_text == self.i18n.get_text("menu.analysis.correlation"):
+            # 相关性分析
+            pass
+        elif action_text == self.i18n.get_text("menu.tools.options"):
+            # 设置选项
+            pass
+        elif action_text == self.i18n.get_text("menu.help.contents"):
+            # 帮助内容
+            pass
+        elif action_text == self.i18n.get_text("menu.help.about"):
+            # 关于
+            pass

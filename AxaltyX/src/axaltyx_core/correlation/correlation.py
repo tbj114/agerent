@@ -228,12 +228,16 @@ def canonical_correlation(
             a_matrix = np.dot(np.dot(x_inv, xy_corr), np.dot(y_inv, xy_corr.T))
             
             # 计算特征值和特征向量
-            eigenvalues, eigenvectors = np.linalg.eig(a_matrix)
-            
-            # 提取典型相关系数
-            canonical_correlations = np.sqrt(eigenvalues)
-        except:
-            pass
+            try:
+                eigenvalues, eigenvectors = np.linalg.eig(a_matrix)
+                
+                # 提取典型相关系数
+                canonical_correlations = np.sqrt(eigenvalues)
+            except Exception as e:
+                # 处理异常，设置默认值
+                canonical_correlations = None
+                # 记录警告
+                warnings.append(f"无法计算典型相关系数: {str(e)}")
         
         return {
             "success": True,

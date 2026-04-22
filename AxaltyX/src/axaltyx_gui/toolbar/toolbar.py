@@ -97,6 +97,71 @@ class AxaltyXToolBar(QToolBar):
         """工具动作处理"""
         action = self.sender()
         action_text = action.toolTip()
-        print(f"Tool action triggered: {action_text}")
-        self.sig_action_triggered.emit(action_text)
-        # 这里可以添加具体的工具处理逻辑
+        action_object_name = action.objectName()
+        print(f"Tool action triggered: {action_text} (ID: {action_object_name})")
+        
+        # 发送信号到主窗口
+        self.sig_action_triggered.emit(action_object_name)
+        
+        # 这里添加具体的工具处理逻辑
+        # 可以根据action_object_name执行不同的操作
+        if action_object_name == "new":
+            # 新建数据集
+            pass
+        elif action_object_name == "open":
+            # 打开文件
+            pass
+        elif action_object_name == "save":
+            # 保存文件
+            pass
+        elif action_object_name == "undo":
+            # 撤销操作
+            pass
+        elif action_object_name == "redo":
+            # 重做操作
+            pass
+        elif action_object_name == "cut":
+            # 剪切操作
+            pass
+        elif action_object_name == "copy":
+            # 复制操作
+            pass
+        elif action_object_name == "paste":
+            # 粘贴操作
+            pass
+        elif action_object_name == "data_view":
+            # 数据视图
+            pass
+        elif action_object_name == "variable_view":
+            # 变量视图
+            pass
+        elif action_object_name == "output_view":
+            # 输出视图
+            pass
+        elif action_object_name == "syntax_view":
+            # 语法视图
+            pass
+        elif action_object_name == "descriptive":
+            # 描述性统计
+            pass
+        elif action_object_name == "frequency":
+            # 频率分析
+            pass
+        elif action_object_name == "correlation":
+            # 相关性分析
+            pass
+        elif action_object_name == "bar":
+            # 条形图
+            pass
+        elif action_object_name == "histogram":
+            # 直方图
+            pass
+        elif action_object_name == "scatter":
+            # 散点图
+            pass
+        elif action_object_name == "options":
+            # 设置选项
+            pass
+        elif action_object_name == "help":
+            # 帮助
+            pass

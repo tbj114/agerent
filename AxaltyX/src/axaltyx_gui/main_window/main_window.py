@@ -557,8 +557,15 @@ class AxaltyXMainWindow(QMainWindow):
         # 应用缩放级别
         if 'zoom_level' in appearance:
             zoom = appearance['zoom_level'] / 100.0
-            # 这里应该添加实际的缩放逻辑
-            pass
+            # 应用缩放逻辑
+            # 1. 缩放主窗口
+            if hasattr(self, 'resize'):
+                current_size = self.size()
+                new_width = int(current_size.width() * zoom)
+                new_height = int(current_size.height() * zoom)
+                self.resize(new_width, new_height)
+            # 2. 通知所有子组件进行缩放
+            self._notify_scale_change(zoom)
         
         # 应用表格字体
         if 'table_font' in appearance and hasattr(self, 'data_tab'):
@@ -576,9 +583,45 @@ class AxaltyXMainWindow(QMainWindow):
         
         # 应用虚拟滚动
         if 'virtual_scroll' in performance:
-            # 这里应该添加实际的虚拟滚动设置逻辑
-            pass
+            # 应用虚拟滚动设置
+            enable_virtual_scroll = performance['virtual_scroll']
+            # 1. 应用到数据表格
+            if hasattr(self, 'data_tab') and hasattr(self.data_tab, 'set_virtual_scroll'):
+                self.data_tab.set_virtual_scroll(enable_virtual_scroll)
+            # 2. 应用到其他支持虚拟滚动的组件
+            if hasattr(self, 'variable_tab') and hasattr(self.variable_tab, 'set_virtual_scroll'):
+                self.variable_tab.set_virtual_scroll(enable_virtual_scroll)
         
         # 应用缓存大小
         if 'cache_size' in performance and hasattr(self, '_cache_manager'):
             self._cache_manager.set_max_size(performance['cache_size'] * 1024 * 1024)  # 转换为字节
+    
+    def _notify_scale_change(self, zoom: float):
+        """通知所有子组件进行缩放
+        
+        Args:
+            zoom: 缩放比例
+        """
+        # 通知数据标签页
+        if hasattr(self, 'data_tab') and hasattr(self.data_tab, 'set_scale'):
+            self.data_tab.set_scale(zoom)
+        
+        # 通知变量标签页
+        if hasattr(self, 'variable_tab') and hasattr(self.variable_tab, 'set_scale'):
+            self.variable_tab.set_scale(zoom)
+        
+        # 通知输出标签页
+        if hasattr(self, 'output_tab') and hasattr(self.output_tab, 'set_scale'):
+            self.output_tab.set_scale(zoom)
+        
+        # 通知语法标签页
+        if hasattr(self, 'syntax_tab') and hasattr(self.syntax_tab, 'set_scale'):
+            self.syntax_tab.set_scale(zoom)
+        
+        # 通知左侧导航面板
+        if hasattr(self, 'left_panel') and hasattr(self.left_panel, 'set_scale'):
+            self.left_panel.set_scale(zoom)
+        
+        # 通知右侧属性面板
+        if hasattr(self, 'right_panel') and hasattr(self.right_panel, 'set_scale'):
+            self.right_panel.set_scale(zoom)

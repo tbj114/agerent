@@ -129,18 +129,37 @@ class BridgeController(QObject):
 
     def cancel_analysis(self, analysis_name: str) -> None:
         """取消分析"""
-        # 这里简化处理，实际应实现取消逻辑
-        pass
+        # 实现取消分析逻辑
+        if self._analysis_slots and hasattr(self._analysis_slots, 'cancel_analysis'):
+            self._analysis_slots.cancel_analysis(analysis_name)
+        else:
+            # 发布取消分析事件
+            self.publish('analysis_cancelled', {'analysis_name': analysis_name})
 
     def get_analysis_names(self) -> list[str]:
         """获取分析名称列表"""
-        # 这里简化处理，实际应从 ANALYSIS_REGISTRY 获取
-        return []
+        # 从核心引擎获取分析名称
+        if self._core_engine and hasattr(self._core_engine, 'get_analysis_registry'):
+            registry = self._core_engine.get_analysis_registry()
+            return list(registry.keys())
+        # 硬编码的分析名称列表作为后备
+        return [
+            'descriptive', 'frequency', 'crosstab', 'correlation', 'ttest',
+            'anova', 'regression', 'clustering', 'factor', 'nonparametric'
+        ]
 
     def get_analysis_params_schema(self, analysis_name: str) -> dict:
         """获取分析参数 schema"""
-        # 这里简化处理，实际应从 ANALYSIS_REGISTRY 获取
-        return {}
+        # 从核心引擎获取参数 schema
+        if self._core_engine and hasattr(self._core_engine, 'get_analysis_registry'):
+            registry = self._core_engine.get_analysis_registry()
+            if analysis_name in registry:
+                return registry[analysis_name].get('params_schema', {})
+        # 返回默认 schema
+        return {
+            'variables': {'type': 'list', 'required': True},
+            'options': {'type': 'dict', 'default': {}}
+        }
 
     # ---- 图表操作 ----
     def create_chart(self, chart_type: str, params: dict) -> None:
