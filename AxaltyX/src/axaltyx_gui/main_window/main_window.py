@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QStatusBar
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt6.QtGui import QIcon, QFont
 from PyQt6.QtCore import pyqtSignal, Qt
 from .title_bar import AxaltyXTitleBar
@@ -10,6 +10,8 @@ from src.axaltyx_gui.tab_system.variable_tab import VariableTab
 from src.axaltyx_gui.tab_system.output_tab import OutputTab
 from src.axaltyx_gui.tab_system.syntax_tab import SyntaxTab
 from src.axaltyx_gui.panels import NavigationPanel, PropertyPanel
+from src.axaltyx_gui.statusbar import AxaltyXStatusBar
+from src.axaltyx_gui.settings import AppSettings, ThemeManager
 
 class AxaltyXMainWindow(QMainWindow):
     """主窗口，承载所有子组件"""
@@ -23,6 +25,11 @@ class AxaltyXMainWindow(QMainWindow):
     def __init__(self, config: dict = None):
         super().__init__()
         self.config = config or {}
+        
+        # 初始化设置和主题管理
+        self.settings = AppSettings()
+        self.theme_manager = ThemeManager()
+        
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setMinimumSize(1024, 600)
         self.setGeometry(100, 100, 1280, 800)
@@ -90,10 +97,13 @@ class AxaltyXMainWindow(QMainWindow):
         main_layout.insertWidget(2, self.toolbar)
 
     def setup_status_bar(self) -> None:
-        self.status_bar = QStatusBar()
+        self.status_bar = AxaltyXStatusBar(self)
         self.status_bar.setFixedHeight(24)
-        self.status_bar.showMessage("就绪")
+        self.status_bar.show_message("就绪")
         self.setStatusBar(self.status_bar)
+        
+        # 更新数据信息
+        self.status_bar.update_data_info(100, 100)
 
     def setup_left_panel(self) -> None:
         self.left_panel = NavigationPanel(self)
@@ -175,11 +185,18 @@ class AxaltyXMainWindow(QMainWindow):
 
     def set_language(self, lang_code: str) -> None:
         # 语言切换实现
+        self.settings.set("general.language", lang_code)
+        self.status_bar.update_language_indicator(lang_code)
         self.sig_language_changed.emit(lang_code)
 
     def set_theme(self, theme_name: str) -> None:
         # 主题切换实现
-        self.sig_theme_changed.emit(theme_name)
+        from PyQt6.QtWidgets import QApplication
+        app = QApplication.instance()
+        if app:
+            self.theme_manager.apply_theme(theme_name, app)
+            self.settings.set("general.theme", theme_name)
+            self.sig_theme_changed.emit(theme_name)
 
     def closeEvent(self, event) -> None:
         # 关闭事件处理
