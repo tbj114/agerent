@@ -33,16 +33,32 @@ class BridgeController(QObject):
             return
         
         # 初始化信号
-        self._signals = BridgeSignals()
+        try:
+            self._signals = BridgeSignals()
+        except Exception as e:
+            print(f"Error initializing signals: {e}")
+            raise
         
         # 初始化命令历史
-        self._command_history = CommandHistory()
+        try:
+            self._command_history = CommandHistory()
+        except Exception as e:
+            print(f"Error initializing command history: {e}")
+            raise
         
         # 初始化事件总线
-        self._event_bus = EventBus()
+        try:
+            self._event_bus = EventBus()
+        except Exception as e:
+            print(f"Error initializing event bus: {e}")
+            raise
         
         # 初始化线程池管理器
-        self._thread_pool = ThreadPoolManager()
+        try:
+            self._thread_pool = ThreadPoolManager()
+        except Exception as e:
+            print(f"Error initializing thread pool: {e}")
+            raise
         
         # 初始化槽函数
         self._data_slots = None
