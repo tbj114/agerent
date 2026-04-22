@@ -36,9 +36,21 @@ class AxaltyXMainWindow(QMainWindow):
         self.title_bar = AxaltyXTitleBar(self)
         self.init_ui()
         
+        # 初始化核心引擎、绘图引擎、国际化管理器和主题管理器
+        from src.axaltyx_core.core_engine import CoreEngine
+        from src.axaltyx_plot.plot_engine import PlotEngine
+        from src.axaltyx_i18n.manager import I18nManager
+        from src.axaltyx_gui.settings.theme_manager import ThemeManager
+        
+        self.core_engine = CoreEngine()
+        self.plot_engine = PlotEngine()
+        self.i18n_manager = I18nManager()
+        self.theme_manager = ThemeManager()
+        
         # 初始化桥接控制器
         from src.axaltyx_bridge.controller import BridgeController
         self.bridge = BridgeController()
+        self.bridge.initialize(self.core_engine, self.plot_engine, self.i18n_manager, self.theme_manager)
         
         # 连接桥接信号
         self._connect_bridge_signals()

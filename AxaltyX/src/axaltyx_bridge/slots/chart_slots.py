@@ -18,6 +18,10 @@ class ChartSlots(QObject):
             # 生成唯一的图表 ID
             chart_id = str(uuid.uuid4())
             
+            # 检查绘图引擎是否存在
+            if not self.plot_engine:
+                raise Exception("Plot engine not initialized")
+                
             # 调用绘图引擎创建图表
             result = self.plot_engine.create_chart(chart_type, params)
             
@@ -52,6 +56,10 @@ class ChartSlots(QObject):
             if not figure:
                 raise ValueError("Chart figure not found")
             
+            # 检查绘图引擎是否存在
+            if not self.plot_engine:
+                raise Exception("Plot engine not initialized")
+                
             # 调用绘图引擎导出图表
             result = self.plot_engine.export_chart(figure, path, format)
             

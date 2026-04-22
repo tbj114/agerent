@@ -26,6 +26,10 @@ class DataSlots(QObject):
             if hasattr(self.signals, 'sig_data_load_started'):
                 self.signals.sig_data_load_started.emit(path, file_type)
                 
+            # 检查核心引擎是否存在
+            if not self.core_engine:
+                raise Exception("Core engine not initialized")
+                
             # 调用核心引擎加载数据
             result = self.core_engine.load_data(path, file_type)
             
@@ -83,6 +87,10 @@ class DataSlots(QObject):
             if hasattr(self.signals, 'sig_data_save_started'):
                 self.signals.sig_data_save_started.emit(path, file_type)
                 
+            # 检查核心引擎是否存在
+            if not self.core_engine:
+                raise Exception("Core engine not initialized")
+                
             # 调用核心引擎保存数据
             result = self.core_engine.save_data(path, file_type, encoding)
             
@@ -136,6 +144,10 @@ class DataSlots(QObject):
             if hasattr(self.signals, 'sig_data_new_started'):
                 self.signals.sig_data_new_started.emit(rows, cols)
                 
+            # 检查核心引擎是否存在
+            if not self.core_engine:
+                raise Exception("Core engine not initialized")
+                
             # 调用核心引擎创建新数据集
             result = self.core_engine.create_new_data(rows, cols)
             
@@ -181,6 +193,10 @@ class DataSlots(QObject):
         try:
             logger.debug(f"Data changed: {change_info}")
             
+            # 检查核心引擎是否存在
+            if not self.core_engine:
+                raise Exception("Core engine not initialized")
+                
             # 调用核心引擎处理数据变更
             self.core_engine.update_data(change_info)
             
@@ -212,6 +228,10 @@ class DataSlots(QObject):
         try:
             logger.debug(f"Variable changed: {var_name} -> {metadata}")
             
+            # 检查核心引擎是否存在
+            if not self.core_engine:
+                raise Exception("Core engine not initialized")
+                
             # 调用核心引擎更新变量属性
             self.core_engine.update_variable_metadata(var_name, metadata)
             
