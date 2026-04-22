@@ -206,6 +206,7 @@ def canonical_correlation(
         p = 0.0
         structure_coefficients = {'x': None, 'y': None}
         standardized_coefficients = {'x': None, 'y': None}
+        warnings = []
         
         # 计算两组变量之间的相关矩阵
         corr_matrix = data_subset.corr()
@@ -238,6 +239,11 @@ def canonical_correlation(
                 canonical_correlations = None
                 # 记录警告
                 warnings.append(f"无法计算典型相关系数: {str(e)}")
+        except Exception as e:
+            # 处理异常，设置默认值
+            canonical_correlations = None
+            # 记录警告
+            warnings.append(f"无法计算典型相关: {str(e)}")
         
         return {
             "success": True,
@@ -250,7 +256,7 @@ def canonical_correlation(
                 "structure_coefficients": structure_coefficients,
                 "standardized_coefficients": standardized_coefficients
             },
-            "warnings": [],
+            "warnings": warnings,
             "error": None
         }
     except Exception as e:

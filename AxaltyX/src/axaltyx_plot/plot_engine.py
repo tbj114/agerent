@@ -8,17 +8,16 @@ from .basic.charts import (
     density_plot, scatter_plot, line_chart, area_chart, box_plot, violin_plot, error_bar_chart
 )
 from .advanced.advanced_charts import (
-    heatmap, pair_plot, correlation_matrix, parallel_coordinates, radar_chart,
-    bubble_chart, waterfall_chart, gantt_chart, sunburst_chart, treemap
+    heatmap, matrix_scatter_plot, radar_chart
 )
 from .statistical.stat_charts import (
-    qq_plot, residual_plot, regression_plot, box_cox_plot, normal_probability_plot
+    qq_plot
 )
 from .interactive.interactive_charts import (
-    interactive_scatter, interactive_bar, interactive_line, interactive_histogram,
-    interactive_heatmap, interactive_surface
+    interactive_scatter
 )
-from .export.exporter import export_chart as export_chart_file
+from .export.exporter import export_figure as export_chart_file
+from .themes.arco_theme import get_arco_theme
 
 
 class PlotEngine:
@@ -26,7 +25,46 @@ class PlotEngine:
 
     def __init__(self):
         """初始化绘图引擎"""
-        pass
+        # 应用默认主题
+        import matplotlib.pyplot as plt
+        plt.style.use(get_arco_theme())
+
+    def correlation_matrix(self, data, vars, method="pearson", title="", figsize=(10, 8)):
+        """相关性矩阵图"""
+        try:
+            import matplotlib.pyplot as plt
+            import seaborn as sns
+            from axaltyx_plot.themes.arco_theme import get_arco_theme, ARCO_COLORS
+            
+            # 应用主题
+            plt.style.use(get_arco_theme())
+            
+            # 计算相关性矩阵
+            corr_matrix = data[vars].corr(method=method)
+            
+            # 创建热力图
+            fig, ax = plt.subplots(figsize=figsize)
+            sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0, ax=ax)
+            ax.set_title(title or "Correlation Matrix")
+            
+            return {
+                "success": True,
+                "results": {
+                    "figure": fig,
+                    "type": "correlation_matrix",
+                    "backend": "matplotlib",
+                    "metadata": {"vars": vars, "method": method}
+                },
+                "warnings": [],
+                "error": None
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "results": {},
+                "warnings": [],
+                "error": str(e)
+            }
 
     def create_chart(self, chart_type: str, params: dict) -> dict:
         """创建图表"""
@@ -196,16 +234,16 @@ class PlotEngine:
                 )
             
             elif chart_type == "pair":
-                return pair_plot(
+                return matrix_scatter_plot(
                     data=data,
                     vars=params.get('vars'),
-                    hue=params.get('hue'),
+                    diagonal=params.get('diagonal', "histogram"),
                     title=params.get('title', ""),
                     figsize=params.get('figsize', (10, 10))
                 )
             
             elif chart_type == "correlation_matrix":
-                return correlation_matrix(
+                return self.correlation_matrix(
                     data=data,
                     vars=params.get('vars'),
                     method=params.get('method', "pearson"),
@@ -223,15 +261,34 @@ class PlotEngine:
                     figsize=params.get('figsize', (8, 8))
                 )
             
-            elif chart_type == "residual":
-                return residual_plot(
+
+            
+
+            
+
+            
+
+            
+
+            
+            elif chart_type == "radar":
+                return radar_chart(
                     data=data,
-                    x=params.get('x'),
-                    y=params.get('y'),
-                    model=params.get('model'),
+                    vars=params.get('vars'),
+                    group=params.get('group'),
                     title=params.get('title', ""),
-                    figsize=params.get('figsize', (10, 6))
+                    figsize=params.get('figsize', (8, 8))
                 )
+            
+
+            
+
+            
+
+            
+
+            
+
             
             # 交互式图表
             elif chart_type == "interactive_scatter":
@@ -243,6 +300,8 @@ class PlotEngine:
                     size=params.get('size'),
                     title=params.get('title', "")
                 )
+            
+
             
             else:
                 return {"success": False, "error": f"Unknown chart type: {chart_type}"}
