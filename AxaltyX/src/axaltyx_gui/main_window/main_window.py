@@ -125,6 +125,53 @@ class AxaltyXMainWindow(QMainWindow):
             params: 分析参数
         """
         self.update_status(f"选中分析: {analysis_id}")
+        
+        # 导入对话框
+        from src.axaltyx_gui.dialogs.descriptive_dialog import DescriptiveDialog
+        from src.axaltyx_gui.dialogs.frequency_dialog import FrequencyDialog
+        from src.axaltyx_gui.dialogs.correlation_dialog import CorrelationDialog
+        from src.axaltyx_gui.dialogs.anova_dialogs import AnovaDialog
+        from src.axaltyx_gui.dialogs.t_test_dialogs import TTestDialog
+        from src.axaltyx_gui.dialogs.regression_dialogs import RegressionDialog
+        from src.axaltyx_gui.dialogs.clustering_dialog import ClusteringDialog
+        from src.axaltyx_gui.dialogs.crosstabs_dialog import CrosstabsDialog
+        from src.axaltyx_gui.dialogs.nonparametric_dialogs import NonparametricDialog
+        from src.axaltyx_gui.dialogs.reliability_dialog import ReliabilityDialog
+        from src.axaltyx_gui.dialogs.survival_dialogs import SurvivalDialog
+        from src.axaltyx_gui.dialogs.factor_dialog import FactorDialog
+        
+        # 显示对应的分析对话框
+        if analysis_id in ['descriptive_stats']:
+            dialog = DescriptiveDialog(self)
+            dialog.exec()
+        elif analysis_id in ['frequencies']:
+            dialog = FrequencyDialog(self)
+            dialog.exec()
+        elif analysis_id in ['pearson', 'partial_corr', 'spearman']:
+            dialog = CorrelationDialog(self)
+            dialog.exec()
+        elif analysis_id in ['one_way_anova', 'two_way_anova', 'ancova', 'rm_anova']:
+            dialog = AnovaDialog(self)
+            dialog.exec()
+        elif analysis_id in ['one_sample_t', 'independent_t', 'paired_t']:
+            dialog = TTestDialog(self)
+            dialog.exec()
+        elif analysis_id in ['linear_reg', 'logistic_reg', 'ordinal_reg', 'nonlinear_reg', 'curve_est']:
+            dialog = RegressionDialog(self)
+            dialog.exec()
+        elif analysis_id in ['hierarchical_cluster', 'kmeans']:
+            dialog = ClusteringDialog(self)
+            dialog.exec()
+        elif analysis_id in ['crosstabs']:
+            dialog = CrosstabsDialog(self)
+            dialog.exec()
+        elif analysis_id in ['mann_whitney', 'wilcoxon', 'kruskal_wallis', 'friedman']:
+            dialog = NonparametricDialog(self)
+            dialog.exec()
+        elif analysis_id in ['efa', 'cfa']:
+            dialog = FactorDialog(self)
+            dialog.exec()
+        
         # 触发分析请求信号
         self.sig_analysis_requested.emit(analysis_id, params)
         
@@ -184,8 +231,15 @@ class AxaltyXMainWindow(QMainWindow):
         pass
 
     def switch_tab(self, tab_id: str) -> None:
-        # 切换标签页实现
-        pass
+        """切换标签页
+
+        Args:
+            tab_id: 标签页ID
+        """
+        # 切换到对应的标签页
+        if hasattr(self, 'tab_widget'):
+            self.tab_widget.set_current_tab(tab_id)
+            self.update_status(f"切换到 {tab_id} 视图")
 
     def set_language(self, lang_code: str) -> None:
         # 语言切换实现

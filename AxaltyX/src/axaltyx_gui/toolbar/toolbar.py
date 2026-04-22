@@ -70,6 +70,7 @@ class AxaltyXToolBar(QToolBar):
         # 这里使用占位图标，实际项目中应该从资源文件加载
         action = QAction(self)
         action.setObjectName(action_id)
+        action.setText(tooltip)
         action.setToolTip(tooltip)
         # 创建一个简单的占位图标
         pixmap = QPixmap(24, 24)
