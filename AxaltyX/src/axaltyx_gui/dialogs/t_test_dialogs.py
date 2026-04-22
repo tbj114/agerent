@@ -7,10 +7,18 @@ from PyQt6.QtCore import Qt
 class TTestDialog(AnalysisDialogBase):
     """t 检验对话框"""
 
-    def __init__(self, available_vars, parent=None):
+    def __init__(self, parent=None):
+        # 从父窗口获取可用变量
+        available_vars = []
+        if parent and hasattr(parent, 'data_tab'):
+            data = parent.data_tab.get_data()
+            if data is not None:
+                available_vars = list(data.columns)
+        
         super().__init__("t 检验", parent)
         self.available_vars = available_vars
         self.selected_vars = []
+        self.selected_paired_vars = []
         self.test_type = 'one_sample'
         self.test_value = 0.0
         self.group_variable = ''
@@ -117,13 +125,36 @@ class TTestDialog(AnalysisDialogBase):
             return
         
         # 检查变量数据类型是否为数值型
-        # 这里应该添加实际的数据类型检查逻辑
-        # 假设我们有一个_data模型可以获取变量类型
-        if hasattr(self, '_data'):
-            for var in variables:
-                var_type = self._data.get_variable_type(var)
-                if not var_type in ['int', 'float', 'numeric']:
-                    self.show_warning(f"变量 {var} 不是数值类型，可能不适合做配对t检验")
+        # 实际的数据类型检查逻辑
+        import pandas as pd
+        
+        # 尝试从父窗口获取数据
+        if hasattr(self.parent(), 'data_tab'):
+            data = self.parent().data_tab.get_data()
+            if data is not None and isinstance(data, pd.DataFrame):
+                for var in variables:
+                    if var in data.columns:
+                        var_dtype = data[var].dtype
+                        if not pd.api.types.is_numeric_dtype(var_dtype):
+                            self.show_warning(f"变量 {var} 不是数值类型，可能不适合做配对t检验")
+                    else:
+                        self.show_warning(f"变量 {var} 不存在于数据中")
+        
+        # 检查检验变量
+        if hasattr(self, 'test_selector'):
+            test_vars = self.test_selector.get_selected_variables()
+            if test_vars:
+                # 检查检验变量的数据类型
+                if hasattr(self.parent(), 'data_tab'):
+                    data = self.parent().data_tab.get_data()
+                    if data is not None and isinstance(data, pd.DataFrame):
+                        for var in test_vars:
+                            if var in data.columns:
+                                var_dtype = data[var].dtype
+                                if not pd.api.types.is_numeric_dtype(var_dtype):
+                                    self.show_warning(f"检验变量 {var} 不是数值类型，可能不适合做t检验")
+                            else:
+                                self.show_warning(f"检验变量 {var} 不存在于数据中")
 
     def _on_test_type_changed(self, button):
         """测试类型变化处理"""

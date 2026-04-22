@@ -30,6 +30,13 @@ class AxaltyXMainWindow(QMainWindow):
         self.settings = AppSettings()
         self.theme_manager = ThemeManager()
         
+        # 初始化桥接控制器
+        from src.axaltyx_bridge.controller import BridgeController
+        self.bridge = BridgeController()
+        
+        # 连接桥接信号
+        self._connect_bridge_signals()
+        
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setMinimumSize(1024, 600)
         self.setGeometry(100, 100, 1280, 800)
@@ -596,6 +603,138 @@ class AxaltyXMainWindow(QMainWindow):
         if 'cache_size' in performance and hasattr(self, '_cache_manager'):
             self._cache_manager.set_max_size(performance['cache_size'] * 1024 * 1024)  # 转换为字节
     
+    def _connect_bridge_signals(self):
+        """连接桥接控制器信号"""
+        # 数据信号
+        self.bridge.signals.sig_data_loaded.connect(self._on_data_loaded)
+        self.bridge.signals.sig_data_saved.connect(self._on_data_saved)
+        self.bridge.signals.sig_data_created.connect(self._on_data_created)
+        self.bridge.signals.sig_data_error.connect(self._on_data_error)
+        
+        # 分析信号
+        self.bridge.signals.sig_analysis_started.connect(self._on_analysis_started)
+        self.bridge.signals.sig_analysis_completed.connect(self._on_analysis_completed)
+        self.bridge.signals.sig_analysis_error.connect(self._on_analysis_error)
+        
+        # 图表信号
+        self.bridge.signals.sig_chart_created.connect(self._on_chart_created)
+        self.bridge.signals.sig_chart_error.connect(self._on_chart_error)
+        
+        # UI信号
+        self.bridge.signals.sig_language_updated.connect(self._on_language_updated)
+        self.bridge.signals.sig_theme_updated.connect(self._on_theme_updated)
+        self.bridge.signals.sig_settings_updated.connect(self._on_settings_updated)
+        
+        # 状态信号
+        self.bridge.signals.sig_status_message.connect(self.update_status)
+        self.bridge.signals.sig_notification.connect(self._on_notification)
+
+    def _on_data_loaded(self, data):
+        """数据加载完成处理"""
+        if isinstance(data, dict) and "data" in data:
+            # 更新数据标签页
+            if hasattr(self, 'data_tab'):
+                import pandas as pd
+                df = pd.DataFrame(data["data"], columns=data.get("columns", []))
+                self.data_tab.set_data(df)
+            
+            # 更新变量标签页
+            if hasattr(self, 'variable_tab'):
+                self.variable_tab.set_data(data)
+            
+            # 更新状态栏
+            rows = data.get("rows", 0)
+            cols = data.get("columns_count", 0)
+            self.update_status(f"成功加载数据: {rows}行 × {cols}列")
+            
+            # 更新状态栏数据信息
+            if hasattr(self, 'status_bar'):
+                self.status_bar.update_data_info(rows, cols)
+
+    def _on_data_saved(self, path):
+        """数据保存完成处理"""
+        self.update_status(f"数据保存成功: {path}")
+
+    def _on_data_created(self, data):
+        """新数据创建完成处理"""
+        if isinstance(data, dict) and "data" in data:
+            # 更新数据标签页
+            if hasattr(self, 'data_tab'):
+                import pandas as pd
+                df = pd.DataFrame(data["data"], columns=data.get("columns", []))
+                self.data_tab.set_data(df)
+            
+            # 更新变量标签页
+            if hasattr(self, 'variable_tab'):
+                self.variable_tab.set_data(data)
+            
+            # 更新状态栏
+            rows = data.get("rows", 0)
+            cols = data.get("columns_count", 0)
+            self.update_status(f"成功创建新数据集: {rows}行 × {cols}列")
+            
+            # 更新状态栏数据信息
+            if hasattr(self, 'status_bar'):
+                self.status_bar.update_data_info(rows, cols)
+
+    def _on_data_error(self, error):
+        """数据操作错误处理"""
+        self.update_status(f"数据操作错误: {error}")
+
+    def _on_analysis_started(self, analysis_name):
+        """分析开始处理"""
+        self.update_status(f"开始分析: {analysis_name}")
+
+    def _on_analysis_completed(self, analysis_name, results):
+        """分析完成处理"""
+        # 更新输出标签页
+        if hasattr(self, 'output_tab'):
+            self.output_tab.add_analysis_result(analysis_name, results)
+        
+        # 更新状态栏
+        self.update_status(f"分析完成: {analysis_name}")
+
+    def _on_analysis_error(self, analysis_name, error):
+        """分析错误处理"""
+        self.update_status(f"分析错误: {analysis_name} - {error}")
+
+    def _on_chart_created(self, chart_id, chart_data):
+        """图表创建完成处理"""
+        # 更新输出标签页
+        if hasattr(self, 'output_tab'):
+            self.output_tab.add_chart(chart_id, chart_data)
+        
+        # 更新状态栏
+        self.update_status("图表创建完成")
+
+    def _on_chart_error(self, error):
+        """图表错误处理"""
+        self.update_status(f"图表创建错误: {error}")
+
+    def _on_language_updated(self, lang_code):
+        """语言更新处理"""
+        # 更新状态栏语言指示器
+        if hasattr(self, 'status_bar'):
+            self.status_bar.update_language_indicator(lang_code)
+        
+        # 更新状态栏
+        self.update_status(f"语言已切换至: {lang_code}")
+
+    def _on_theme_updated(self, theme_name):
+        """主题更新处理"""
+        # 更新状态栏
+        self.update_status(f"主题已切换至: {theme_name}")
+
+    def _on_settings_updated(self, settings):
+        """设置更新处理"""
+        # 更新状态栏
+        self.update_status("设置已更新")
+
+    def _on_notification(self, ntype, title, message):
+        """通知处理"""
+        # 这里可以实现通知显示逻辑
+        print(f"{ntype}: {title} - {message}")
+
     def _notify_scale_change(self, zoom: float):
         """通知所有子组件进行缩放
         

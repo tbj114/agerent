@@ -483,73 +483,137 @@ class AxaltyXMenuBar(QMenuBar):
         # 根据菜单文本执行不同的操作
         if action_text == self.i18n.get_text("menu.file.new"):
             # 新建数据集
-            pass
+            if hasattr(self.parent(), 'new_dataset'):
+                self.parent().new_dataset()
         elif action_text == self.i18n.get_text("menu.file.open"):
             # 打开文件
-            pass
+            if hasattr(self.parent(), 'load_data'):
+                from PyQt6.QtWidgets import QFileDialog
+                file_filter = "CSV files (*.csv);;Excel files (*.xlsx);;Text files (*.txt);;JSON files (*.json);;All files (*.*)"
+                path, _ = QFileDialog.getOpenFileName(self.parent(), "打开文件", "", file_filter)
+                if path:
+                    import os
+                    _, ext = os.path.splitext(path)
+                    file_type = ext.lower().lstrip('.')
+                    self.parent().load_data(path, file_type)
         elif action_text == self.i18n.get_text("menu.file.save"):
             # 保存文件
-            pass
+            if hasattr(self.parent(), 'save_data'):
+                from PyQt6.QtWidgets import QFileDialog
+                file_filter = "CSV files (*.csv);;Excel files (*.xlsx);;Text files (*.txt);;JSON files (*.json)"
+                path, _ = QFileDialog.getSaveFileName(self.parent(), "保存文件", "", file_filter)
+                if path:
+                    import os
+                    _, ext = os.path.splitext(path)
+                    file_type = ext.lower().lstrip('.')
+                    if not file_type:
+                        # 默认保存为CSV
+                        path += ".csv"
+                        file_type = "csv"
+                    self.parent().save_data(path, file_type)
         elif action_text == self.i18n.get_text("menu.file.save_as"):
             # 另存为
-            pass
+            if hasattr(self.parent(), 'save_data'):
+                from PyQt6.QtWidgets import QFileDialog
+                file_filter = "CSV files (*.csv);;Excel files (*.xlsx);;Text files (*.txt);;JSON files (*.json)"
+                path, _ = QFileDialog.getSaveFileName(self.parent(), "另存为", "", file_filter)
+                if path:
+                    import os
+                    _, ext = os.path.splitext(path)
+                    file_type = ext.lower().lstrip('.')
+                    if not file_type:
+                        # 默认保存为CSV
+                        path += ".csv"
+                        file_type = "csv"
+                    self.parent().save_data(path, file_type)
         elif action_text == self.i18n.get_text("menu.file.close"):
             # 关闭文件
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("关闭文件")
         elif action_text == self.i18n.get_text("menu.file.export"):
             # 导出文件
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("导出文件")
         elif action_text == self.i18n.get_text("menu.file.exit"):
             # 退出程序
-            pass
+            if hasattr(self.parent(), 'close'):
+                self.parent().close()
         elif action_text == self.i18n.get_text("menu.edit.undo"):
             # 撤销操作
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("撤销操作")
         elif action_text == self.i18n.get_text("menu.edit.redo"):
             # 重做操作
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("重做操作")
         elif action_text == self.i18n.get_text("menu.edit.cut"):
             # 剪切操作
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("剪切操作")
         elif action_text == self.i18n.get_text("menu.edit.copy"):
             # 复制操作
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("复制操作")
         elif action_text == self.i18n.get_text("menu.edit.paste"):
             # 粘贴操作
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("粘贴操作")
         elif action_text == self.i18n.get_text("menu.view.data_view"):
             # 数据视图
-            pass
+            if hasattr(self.parent(), 'switch_tab'):
+                self.parent().switch_tab("data_view")
         elif action_text == self.i18n.get_text("menu.view.variable_view"):
             # 变量视图
-            pass
+            if hasattr(self.parent(), 'switch_tab'):
+                self.parent().switch_tab("variable_view")
         elif action_text == self.i18n.get_text("menu.view.output_view"):
             # 输出视图
-            pass
+            if hasattr(self.parent(), 'switch_tab'):
+                self.parent().switch_tab("output_view")
         elif action_text == self.i18n.get_text("menu.view.syntax_view"):
             # 语法视图
-            pass
+            if hasattr(self.parent(), 'switch_tab'):
+                self.parent().switch_tab("syntax_view")
         elif action_text == self.i18n.get_text("menu.view.light_theme"):
             # 亮色主题
-            pass
+            if hasattr(self.parent(), 'set_theme'):
+                self.parent().set_theme("light")
         elif action_text == self.i18n.get_text("menu.view.dark_theme"):
             # 暗色主题
-            pass
+            if hasattr(self.parent(), 'set_theme'):
+                self.parent().set_theme("dark")
         elif action_text == self.i18n.get_text("menu.analysis.descriptive"):
             # 描述性统计
-            pass
+            if hasattr(self.parent(), 'show_analysis_dialog'):
+                self.parent().show_analysis_dialog("descriptive")
         elif action_text == self.i18n.get_text("menu.analysis.frequency"):
             # 频率分析
-            pass
+            if hasattr(self.parent(), 'show_analysis_dialog'):
+                self.parent().show_analysis_dialog("frequency")
         elif action_text == self.i18n.get_text("menu.analysis.correlation"):
             # 相关性分析
-            pass
+            if hasattr(self.parent(), 'show_analysis_dialog'):
+                self.parent().show_analysis_dialog("correlation")
         elif action_text == self.i18n.get_text("menu.tools.options"):
             # 设置选项
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("打开设置")
+            from src.axaltyx_gui.dialogs.settings_dialog import SettingsDialog
+            dialog = SettingsDialog(self.parent())
+            if hasattr(self.parent(), '_on_settings_changed'):
+                dialog.sig_settings_changed.connect(self.parent()._on_settings_changed)
+            dialog.exec()
         elif action_text == self.i18n.get_text("menu.help.contents"):
             # 帮助内容
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("打开帮助")
+            from src.axaltyx_gui.dialogs.help_dialog import HelpDialog
+            dialog = HelpDialog(self.parent())
+            dialog.exec()
         elif action_text == self.i18n.get_text("menu.help.about"):
             # 关于
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("打开关于")
+            from src.axaltyx_gui.dialogs.about_dialog import AboutDialog
+            dialog = AboutDialog(self.parent())
+            dialog.exec()

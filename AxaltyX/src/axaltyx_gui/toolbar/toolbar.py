@@ -107,61 +107,107 @@ class AxaltyXToolBar(QToolBar):
         # 可以根据action_object_name执行不同的操作
         if action_object_name == "new":
             # 新建数据集
-            pass
+            if hasattr(self.parent(), 'new_dataset'):
+                self.parent().new_dataset()
         elif action_object_name == "open":
             # 打开文件
-            pass
+            if hasattr(self.parent(), 'load_data'):
+                from PyQt6.QtWidgets import QFileDialog
+                file_filter = "CSV files (*.csv);;Excel files (*.xlsx);;Text files (*.txt);;JSON files (*.json);;All files (*.*)"
+                path, _ = QFileDialog.getOpenFileName(self.parent(), "打开文件", "", file_filter)
+                if path:
+                    import os
+                    _, ext = os.path.splitext(path)
+                    file_type = ext.lower().lstrip('.')
+                    self.parent().load_data(path, file_type)
         elif action_object_name == "save":
             # 保存文件
-            pass
+            if hasattr(self.parent(), 'save_data'):
+                from PyQt6.QtWidgets import QFileDialog
+                file_filter = "CSV files (*.csv);;Excel files (*.xlsx);;Text files (*.txt);;JSON files (*.json)"
+                path, _ = QFileDialog.getSaveFileName(self.parent(), "保存文件", "", file_filter)
+                if path:
+                    import os
+                    _, ext = os.path.splitext(path)
+                    file_type = ext.lower().lstrip('.')
+                    if not file_type:
+                        # 默认保存为CSV
+                        path += ".csv"
+                        file_type = "csv"
+                    self.parent().save_data(path, file_type)
         elif action_object_name == "undo":
             # 撤销操作
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("撤销操作")
         elif action_object_name == "redo":
             # 重做操作
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("重做操作")
         elif action_object_name == "cut":
             # 剪切操作
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("剪切操作")
         elif action_object_name == "copy":
             # 复制操作
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("复制操作")
         elif action_object_name == "paste":
             # 粘贴操作
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("粘贴操作")
         elif action_object_name == "data_view":
             # 数据视图
-            pass
+            if hasattr(self.parent(), 'switch_tab'):
+                self.parent().switch_tab("data_view")
         elif action_object_name == "variable_view":
             # 变量视图
-            pass
+            if hasattr(self.parent(), 'switch_tab'):
+                self.parent().switch_tab("variable_view")
         elif action_object_name == "output_view":
             # 输出视图
-            pass
+            if hasattr(self.parent(), 'switch_tab'):
+                self.parent().switch_tab("output_view")
         elif action_object_name == "syntax_view":
             # 语法视图
-            pass
+            if hasattr(self.parent(), 'switch_tab'):
+                self.parent().switch_tab("syntax_view")
         elif action_object_name == "descriptive":
             # 描述性统计
-            pass
+            if hasattr(self.parent(), 'show_analysis_dialog'):
+                self.parent().show_analysis_dialog("descriptive")
         elif action_object_name == "frequency":
             # 频率分析
-            pass
+            if hasattr(self.parent(), 'show_analysis_dialog'):
+                self.parent().show_analysis_dialog("frequency")
         elif action_object_name == "correlation":
             # 相关性分析
-            pass
+            if hasattr(self.parent(), 'show_analysis_dialog'):
+                self.parent().show_analysis_dialog("correlation")
         elif action_object_name == "bar":
             # 条形图
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("创建条形图")
         elif action_object_name == "histogram":
             # 直方图
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("创建直方图")
         elif action_object_name == "scatter":
             # 散点图
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("创建散点图")
         elif action_object_name == "options":
             # 设置选项
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("打开设置")
+            from src.axaltyx_gui.dialogs.settings_dialog import SettingsDialog
+            dialog = SettingsDialog(self.parent())
+            if hasattr(self.parent(), '_on_settings_changed'):
+                dialog.sig_settings_changed.connect(self.parent()._on_settings_changed)
+            dialog.exec()
         elif action_object_name == "help":
             # 帮助
-            pass
+            if hasattr(self.parent(), 'update_status'):
+                self.parent().update_status("打开帮助")
+            from src.axaltyx_gui.dialogs.help_dialog import HelpDialog
+            dialog = HelpDialog(self.parent())
+            dialog.exec()

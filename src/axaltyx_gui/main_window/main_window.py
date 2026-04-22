@@ -119,16 +119,23 @@ class AxaltyXMainWindow(QMainWindow):
             file_type: 文件类型
         """
         try:
-            # 这里应该实现实际的数据加载逻辑
-            # 例如使用pandas读取文件
+            # 实际的数据加载逻辑
             import pandas as pd
+            import os
             
+            # 确保文件存在
+            if not os.path.exists(path):
+                raise FileNotFoundError(f"文件不存在: {path}")
+            
+            # 根据文件类型读取数据
             if file_type == "csv":
                 data = pd.read_csv(path)
-            elif file_type == "excel":
+            elif file_type == "excel" or file_type == "xlsx" or file_type == "xls":
                 data = pd.read_excel(path)
             elif file_type == "json":
                 data = pd.read_json(path)
+            elif file_type == "txt":
+                data = pd.read_csv(path, delimiter='\t')
             else:
                 raise ValueError(f"不支持的文件类型: {file_type}")
             
@@ -137,14 +144,28 @@ class AxaltyXMainWindow(QMainWindow):
                 "data": data.to_dict('records'),
                 "columns": list(data.columns),
                 "path": path,
-                "file_type": file_type
+                "file_type": file_type,
+                "rows": len(data),
+                "columns_count": len(data.columns)
             }
+            
+            # 更新数据标签页
+            if hasattr(self, 'data_tab'):
+                self.data_tab.set_data(data)
+            
+            # 更新变量标签页
+            if hasattr(self, 'variable_tab'):
+                self.variable_tab.set_data(data)
             
             # 发出数据加载完成信号
             self.sig_data_loaded.emit(data_dict)
             
             # 更新状态栏
-            self.update_status(f"成功加载数据文件: {path}")
+            self.update_status(f"成功加载数据文件: {path} ({len(data)}行 × {len(data.columns)}列)")
+            
+            # 更新状态栏数据信息
+            if hasattr(self, 'status_bar'):
+                self.status_bar.update_data_info(len(data), len(data.columns))
             
         except Exception as e:
             # 处理异常
@@ -152,7 +173,7 @@ class AxaltyXMainWindow(QMainWindow):
             print(error_message)
             self.update_status(error_message)
             
-            # 发出空数据信号
+            # 发出错误信号
             self.sig_data_loaded.emit({"error": error_message})
 
     def save_data(self, path: str, file_type: str) -> None:
@@ -167,29 +188,43 @@ class AxaltyXMainWindow(QMainWindow):
             current_data = self.get_current_data()
             
             if current_data is None:
-                raise ValueError("没有数据可保存")
+                # 尝试从数据标签页获取数据
+                if hasattr(self, 'data_tab'):
+                    current_data = self.data_tab.get_data()
+                else:
+                    raise ValueError("没有数据可保存")
             
-            # 这里应该实现实际的数据保存逻辑
-            # 例如使用pandas保存文件
+            # 实际的数据保存逻辑
             import pandas as pd
+            import os
             
-            # 假设current_data是一个包含data和columns的字典
-            if isinstance(current_data, dict) and "data" in current_data and "columns" in current_data:
+            # 确保目录存在
+            directory = os.path.dirname(path)
+            if directory and not os.path.exists(directory):
+                os.makedirs(directory)
+            
+            # 处理数据格式
+            if isinstance(current_data, pd.DataFrame):
+                data = current_data
+            elif isinstance(current_data, dict) and "data" in current_data and "columns" in current_data:
                 data = pd.DataFrame(current_data["data"], columns=current_data["columns"])
             else:
                 raise ValueError("数据格式不正确")
             
+            # 根据文件类型保存数据
             if file_type == "csv":
-                data.to_csv(path, index=False)
-            elif file_type == "excel":
+                data.to_csv(path, index=False, encoding='utf-8-sig')
+            elif file_type == "excel" or file_type == "xlsx":
                 data.to_excel(path, index=False)
             elif file_type == "json":
-                data.to_json(path, orient='records')
+                data.to_json(path, orient='records', force_ascii=False)
+            elif file_type == "txt":
+                data.to_csv(path, sep='\t', index=False, encoding='utf-8-sig')
             else:
                 raise ValueError(f"不支持的文件类型: {file_type}")
             
             # 更新状态栏
-            self.update_status(f"成功保存数据文件: {path}")
+            self.update_status(f"成功保存数据文件: {path} ({len(data)}行 × {len(data.columns)}列)")
             
         except Exception as e:
             # 处理异常
@@ -246,19 +281,72 @@ class AxaltyXMainWindow(QMainWindow):
             analysis_name: 分析名称
         """
         try:
-            # 这里应该实现实际的分析对话框显示逻辑
-            # 例如根据分析名称显示不同的对话框
+            # 实际的分析对话框显示逻辑
             print(f"显示分析对话框: {analysis_name}")
+            
+            # 导入对话框
+            from src.axaltyx_gui.dialogs.descriptive_dialog import DescriptiveDialog
+            from src.axaltyx_gui.dialogs.frequency_dialog import FrequencyDialog
+            from src.axaltyx_gui.dialogs.correlation_dialog import CorrelationDialog
+            from src.axaltyx_gui.dialogs.anova_dialogs import AnovaDialog
+            from src.axaltyx_gui.dialogs.t_test_dialogs import TTestDialog
+            from src.axaltyx_gui.dialogs.regression_dialogs import RegressionDialog
+            from src.axaltyx_gui.dialogs.clustering_dialog import ClusteringDialog
+            from src.axaltyx_gui.dialogs.crosstabs_dialog import CrosstabsDialog
+            from src.axaltyx_gui.dialogs.nonparametric_dialogs import NonparametricDialog
+            from src.axaltyx_gui.dialogs.reliability_dialog import ReliabilityDialog
+            from src.axaltyx_gui.dialogs.survival_dialogs import SurvivalDialog
+            from src.axaltyx_gui.dialogs.factor_dialog import FactorDialog
+            
+            # 显示对应的分析对话框
+            dialog = None
+            if "descriptive" in analysis_name.lower():
+                dialog = DescriptiveDialog(self)
+            elif "frequency" in analysis_name.lower():
+                dialog = FrequencyDialog(self)
+            elif "correlation" in analysis_name.lower():
+                dialog = CorrelationDialog(self)
+            elif "anova" in analysis_name.lower():
+                dialog = AnovaDialog(self)
+            elif "t_test" in analysis_name.lower() or "t-test" in analysis_name.lower():
+                dialog = TTestDialog(self)
+            elif "regression" in analysis_name.lower():
+                dialog = RegressionDialog(self)
+            elif "clustering" in analysis_name.lower():
+                dialog = ClusteringDialog(self)
+            elif "crosstab" in analysis_name.lower():
+                dialog = CrosstabsDialog(self)
+            elif "nonparametric" in analysis_name.lower():
+                dialog = NonparametricDialog(self)
+            elif "reliability" in analysis_name.lower():
+                dialog = ReliabilityDialog(self)
+            elif "survival" in analysis_name.lower():
+                dialog = SurvivalDialog(self)
+            elif "factor" in analysis_name.lower():
+                dialog = FactorDialog(self)
+            
+            # 执行对话框
+            if dialog:
+                # 连接对话框信号
+                dialog.sig_analysis_requested.connect(lambda name, params: self.sig_analysis_requested.emit(name, params))
+                # 显示对话框
+                dialog.exec()
+            
+            # 获取选中变量
+            selected_vars = self.get_selected_variables()
             
             # 发出分析请求信号
             analysis_params = {
-                "variables": self.get_selected_variables(),
+                "variables": selected_vars,
                 "options": {}
             }
             self.sig_analysis_requested.emit(analysis_name, analysis_params)
             
             # 更新状态栏
-            self.update_status(f"准备进行{analysis_name}分析")
+            if selected_vars:
+                self.update_status(f"准备进行{analysis_name}分析，选中变量: {', '.join(selected_vars[:3])}{'...' if len(selected_vars) > 3 else ''}")
+            else:
+                self.update_status(f"准备进行{analysis_name}分析")
             
         except Exception as e:
             # 处理异常
@@ -273,12 +361,26 @@ class AxaltyXMainWindow(QMainWindow):
             tab_id: 标签页ID
         """
         try:
-            # 这里应该实现实际的标签页切换逻辑
-            # 例如根据tab_id切换到对应的标签页
+            # 实际的标签页切换逻辑
             print(f"切换到标签页: {tab_id}")
             
-            # 更新状态栏
-            self.update_status(f"切换到{tab_id}视图")
+            # 检查是否有标签页组件
+            if not hasattr(self, 'tab_widget'):
+                raise AttributeError("标签页组件未初始化")
+            
+            # 切换到对应的标签页
+            success = self.tab_widget.set_current_tab(tab_id)
+            
+            if success:
+                # 获取标签页名称
+                tab_name = self.tab_widget.get_tab_name(tab_id)
+                if tab_name:
+                    self.update_status(f"切换到{tab_name}视图")
+                else:
+                    self.update_status(f"切换到{tab_id}视图")
+            else:
+                # 标签页不存在
+                raise ValueError(f"标签页ID不存在: {tab_id}")
             
         except Exception as e:
             # 处理异常
@@ -308,21 +410,39 @@ class AxaltyXMainWindow(QMainWindow):
             if action_id == "new":
                 self.new_dataset()
             elif action_id == "open":
-                # 这里应该打开文件对话框
-                self.update_status("打开文件")
+                # 打开文件对话框
+                from PyQt6.QtWidgets import QFileDialog
+                file_filter = "CSV files (*.csv);;Excel files (*.xlsx);;Text files (*.txt);;JSON files (*.json);;All files (*.*)"
+                path, _ = QFileDialog.getOpenFileName(self, "打开文件", "", file_filter)
+                if path:
+                    import os
+                    _, ext = os.path.splitext(path)
+                    file_type = ext.lower().lstrip('.')
+                    self.load_data(path, file_type)
             elif action_id == "save":
-                # 这里应该保存文件对话框
-                self.update_status("保存文件")
+                # 保存文件对话框
+                from PyQt6.QtWidgets import QFileDialog
+                file_filter = "CSV files (*.csv);;Excel files (*.xlsx);;Text files (*.txt);;JSON files (*.json)"
+                path, _ = QFileDialog.getSaveFileName(self, "保存文件", "", file_filter)
+                if path:
+                    import os
+                    _, ext = os.path.splitext(path)
+                    file_type = ext.lower().lstrip('.')
+                    if not file_type:
+                        # 默认保存为CSV
+                        path += ".csv"
+                        file_type = "csv"
+                    self.save_data(path, file_type)
             
             # 处理视图操作
             elif action_id == "data_view":
-                self.switch_tab("data")
+                self.switch_tab("data_view")
             elif action_id == "variable_view":
-                self.switch_tab("variable")
+                self.switch_tab("variable_view")
             elif action_id == "output_view":
-                self.switch_tab("output")
+                self.switch_tab("output_view")
             elif action_id == "syntax_view":
-                self.switch_tab("syntax")
+                self.switch_tab("syntax_view")
             
             # 处理分析操作
             elif action_id == "descriptive":
@@ -334,13 +454,18 @@ class AxaltyXMainWindow(QMainWindow):
             
             # 处理工具操作
             elif action_id == "options":
-                # 这里应该打开设置对话框
-                self.update_status("打开设置")
+                # 打开设置对话框
+                from src.axaltyx_gui.dialogs.settings_dialog import SettingsDialog
+                dialog = SettingsDialog(self)
+                dialog.sig_settings_changed.connect(self._on_settings_changed)
+                dialog.exec()
             
             # 处理帮助操作
             elif action_id == "help":
-                # 这里应该打开帮助对话框
-                self.update_status("打开帮助")
+                # 打开帮助对话框
+                from src.axaltyx_gui.dialogs.help_dialog import HelpDialog
+                dialog = HelpDialog(self)
+                dialog.exec()
             
             else:
                 # 处理其他动作
