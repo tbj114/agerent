@@ -109,6 +109,9 @@ class TTestDialog(AnalysisDialogBase):
     def _on_paired_variables_selected(self, variables):
         """配对变量选择变化处理"""
         # 配对变量处理
+        # 这里可以添加配对变量选择的逻辑
+        # 例如：检查配对变量的数量是否为偶数
+        # 或者检查配对变量的类型是否一致
         pass
 
     def _on_test_type_changed(self, button):

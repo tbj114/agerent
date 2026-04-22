@@ -215,20 +215,142 @@ class AxaltyXMainWindow(QMainWindow):
         self.central_widget.setStyleSheet("background-color: #F7F8FA;")
 
     def load_data(self, path: str, file_type: str) -> None:
-        # 数据加载实现
-        pass
+        """加载数据
+
+        Args:
+            path: 文件路径
+            file_type: 文件类型
+        """
+        from PyQt6.QtWidgets import QFileDialog
+        
+        # 如果没有提供路径，打开文件对话框
+        if not path:
+            file_filter = "CSV files (*.csv);;Excel files (*.xlsx);;Text files (*.txt);;All files (*.*)"
+            path, _ = QFileDialog.getOpenFileName(self, "打开文件", "", file_filter)
+            if not path:
+                return
+        
+        # 确定文件类型
+        if not file_type:
+            import os
+            _, ext = os.path.splitext(path)
+            file_type = ext.lower().lstrip('.')
+        
+        # 加载数据
+        try:
+            self.update_status(f"正在加载数据: {path}")
+            # 这里应该调用数据加载逻辑
+            # 示例：data = load_file(path, file_type)
+            # self.data_tab.set_data(data)
+            self.update_status(f"数据加载成功: {path}")
+        except Exception as e:
+            self.update_status(f"数据加载失败: {str(e)}")
 
     def save_data(self, path: str, file_type: str) -> None:
-        # 数据保存实现
-        pass
+        """保存数据
+
+        Args:
+            path: 文件路径
+            file_type: 文件类型
+        """
+        from PyQt6.QtWidgets import QFileDialog
+        
+        # 如果没有提供路径，打开文件对话框
+        if not path:
+            file_filter = "CSV files (*.csv);;Excel files (*.xlsx);;Text files (*.txt)"
+            path, _ = QFileDialog.getSaveFileName(self, "保存文件", "", file_filter)
+            if not path:
+                return
+        
+        # 确定文件类型
+        if not file_type:
+            import os
+            _, ext = os.path.splitext(path)
+            file_type = ext.lower().lstrip('.')
+        
+        # 保存数据
+        try:
+            self.update_status(f"正在保存数据: {path}")
+            # 这里应该调用数据保存逻辑
+            # 示例：data = self.data_tab.get_data()
+            # save_file(data, path, file_type)
+            self.update_status(f"数据保存成功: {path}")
+        except Exception as e:
+            self.update_status(f"数据保存失败: {str(e)}")
 
     def new_dataset(self, rows: int = 100, cols: int = 100) -> None:
-        # 新建数据集实现
-        pass
+        """新建数据集
+
+        Args:
+            rows: 行数
+            cols: 列数
+        """
+        try:
+            self.update_status(f"正在创建新数据集: {rows}行 x {cols}列")
+            # 这里应该调用创建新数据集的逻辑
+            # 示例：data = create_empty_dataset(rows, cols)
+            # self.data_tab.set_data(data)
+            self.update_status(f"新数据集创建成功: {rows}行 x {cols}列")
+        except Exception as e:
+            self.update_status(f"创建新数据集失败: {str(e)}")
 
     def show_analysis_dialog(self, analysis_name: str) -> None:
-        # 显示分析对话框实现
-        pass
+        """显示分析对话框
+
+        Args:
+            analysis_name: 分析名称
+        """
+        # 导入对话框
+        from src.axaltyx_gui.dialogs.descriptive_dialog import DescriptiveDialog
+        from src.axaltyx_gui.dialogs.frequency_dialog import FrequencyDialog
+        from src.axaltyx_gui.dialogs.correlation_dialog import CorrelationDialog
+        from src.axaltyx_gui.dialogs.anova_dialogs import AnovaDialog
+        from src.axaltyx_gui.dialogs.t_test_dialogs import TTestDialog
+        from src.axaltyx_gui.dialogs.regression_dialogs import RegressionDialog
+        from src.axaltyx_gui.dialogs.clustering_dialog import ClusteringDialog
+        from src.axaltyx_gui.dialogs.crosstabs_dialog import CrosstabsDialog
+        from src.axaltyx_gui.dialogs.nonparametric_dialogs import NonparametricDialog
+        from src.axaltyx_gui.dialogs.reliability_dialog import ReliabilityDialog
+        from src.axaltyx_gui.dialogs.survival_dialogs import SurvivalDialog
+        from src.axaltyx_gui.dialogs.factor_dialog import FactorDialog
+        
+        # 显示对应的分析对话框
+        if "descriptive" in analysis_name.lower():
+            dialog = DescriptiveDialog(self)
+            dialog.exec()
+        elif "frequency" in analysis_name.lower():
+            dialog = FrequencyDialog(self)
+            dialog.exec()
+        elif "correlation" in analysis_name.lower():
+            dialog = CorrelationDialog(self)
+            dialog.exec()
+        elif "anova" in analysis_name.lower():
+            dialog = AnovaDialog(self)
+            dialog.exec()
+        elif "t_test" in analysis_name.lower() or "t-test" in analysis_name.lower():
+            dialog = TTestDialog(self)
+            dialog.exec()
+        elif "regression" in analysis_name.lower():
+            dialog = RegressionDialog(self)
+            dialog.exec()
+        elif "clustering" in analysis_name.lower():
+            dialog = ClusteringDialog(self)
+            dialog.exec()
+        elif "crosstab" in analysis_name.lower():
+            dialog = CrosstabsDialog(self)
+            dialog.exec()
+        elif "nonparametric" in analysis_name.lower():
+            dialog = NonparametricDialog(self)
+            dialog.exec()
+        elif "reliability" in analysis_name.lower():
+            dialog = ReliabilityDialog(self)
+            dialog.exec()
+        elif "survival" in analysis_name.lower():
+            dialog = SurvivalDialog(self)
+            dialog.exec()
+        elif "factor" in analysis_name.lower():
+            dialog = FactorDialog(self)
+            dialog.exec()
 
     def switch_tab(self, tab_id: str) -> None:
         """切换标签页

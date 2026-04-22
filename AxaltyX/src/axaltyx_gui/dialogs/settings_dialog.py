@@ -30,26 +30,32 @@ class SettingsDialog(QDialog):
         general_layout = QFormLayout(general_tab)
         
         # 语言
-        general_layout.addRow("语言:", self._create_language_combo())
+        self.language_combo = self._create_language_combo()
+        general_layout.addRow("语言:", self.language_combo)
         
         # 主题
-        general_layout.addRow("主题:", self._create_theme_combo())
+        self.theme_combo = self._create_theme_combo()
+        general_layout.addRow("主题:", self.theme_combo)
         
         # 启动时
-        general_layout.addRow("启动时:", self._create_startup_combo())
+        self.startup_combo = self._create_startup_combo()
+        general_layout.addRow("启动时:", self.startup_combo)
         
         # 自动保存
         self.auto_save_checkbox = QCheckBox("自动保存")
         general_layout.addRow(self.auto_save_checkbox)
         
         # 自动保存间隔
-        general_layout.addRow("自动保存间隔(分钟):", self._create_auto_save_interval_spin())
+        self.auto_save_interval_spin = self._create_auto_save_interval_spin()
+        general_layout.addRow("自动保存间隔(分钟):", self.auto_save_interval_spin)
         
         # 最近文件数量
-        general_layout.addRow("最近文件数量:", self._create_recent_files_spin())
+        self.recent_files_spin = self._create_recent_files_spin()
+        general_layout.addRow("最近文件数量:", self.recent_files_spin)
         
         # 小数位数
-        general_layout.addRow("小数位数:", self._create_decimal_places_spin())
+        self.decimal_places_spin = self._create_decimal_places_spin()
+        general_layout.addRow("小数位数:", self.decimal_places_spin)
         
         self.tab_widget.addTab(general_tab, "常规")
 
@@ -58,13 +64,16 @@ class SettingsDialog(QDialog):
         appearance_layout = QFormLayout(appearance_tab)
         
         # 字体大小
-        appearance_layout.addRow("字体大小:", self._create_font_size_spin())
+        self.font_size_spin = self._create_font_size_spin()
+        appearance_layout.addRow("字体大小:", self.font_size_spin)
         
         # 表格字体
-        appearance_layout.addRow("表格字体:", self._create_font_combo())
+        self.font_combo = self._create_font_combo()
+        appearance_layout.addRow("表格字体:", self.font_combo)
         
         # 缩放级别
-        appearance_layout.addRow("缩放级别:", self._create_zoom_combo())
+        self.zoom_combo = self._create_zoom_combo()
+        appearance_layout.addRow("缩放级别:", self.zoom_combo)
         
         self.tab_widget.addTab(appearance_tab, "外观")
 
@@ -73,16 +82,20 @@ class SettingsDialog(QDialog):
         data_layout = QFormLayout(data_tab)
         
         # 默认行数
-        data_layout.addRow("默认行数:", self._create_default_rows_spin())
+        self.default_rows_spin = self._create_default_rows_spin()
+        data_layout.addRow("默认行数:", self.default_rows_spin)
         
         # 默认列数
-        data_layout.addRow("默认列数:", self._create_default_cols_spin())
+        self.default_cols_spin = self._create_default_cols_spin()
+        data_layout.addRow("默认列数:", self.default_cols_spin)
         
         # 小数分隔符
-        data_layout.addRow("小数分隔符:", self._create_decimal_separator_combo())
+        self.decimal_separator_combo = self._create_decimal_separator_combo()
+        data_layout.addRow("小数分隔符:", self.decimal_separator_combo)
         
         # 千位分隔符
-        data_layout.addRow("千位分隔符:", self._create_thousand_separator_combo())
+        self.thousand_separator_combo = self._create_thousand_separator_combo()
+        data_layout.addRow("千位分隔符:", self.thousand_separator_combo)
         
         self.tab_widget.addTab(data_tab, "数据")
 
@@ -91,13 +104,16 @@ class SettingsDialog(QDialog):
         output_layout = QFormLayout(output_tab)
         
         # 默认图表格式
-        output_layout.addRow("默认图表格式:", self._create_chart_format_combo())
+        self.chart_format_combo = self._create_chart_format_combo()
+        output_layout.addRow("默认图表格式:", self.chart_format_combo)
         
         # 默认图表分辨率
-        output_layout.addRow("默认图表分辨率:", self._create_chart_dpi_spin())
+        self.chart_dpi_spin = self._create_chart_dpi_spin()
+        output_layout.addRow("默认图表分辨率:", self.chart_dpi_spin)
         
         # 表格输出格式
-        output_layout.addRow("表格输出格式:", self._create_table_format_combo())
+        self.table_format_combo = self._create_table_format_combo()
+        output_layout.addRow("表格输出格式:", self.table_format_combo)
         
         self.tab_widget.addTab(output_tab, "输出")
 
@@ -106,14 +122,16 @@ class SettingsDialog(QDialog):
         performance_layout = QFormLayout(performance_tab)
         
         # 最大线程数
-        performance_layout.addRow("最大线程数:", self._create_max_threads_spin())
+        self.max_threads_spin = self._create_max_threads_spin()
+        performance_layout.addRow("最大线程数:", self.max_threads_spin)
         
         # 虚拟滚动
         self.virtual_scroll_checkbox = QCheckBox("虚拟滚动")
         performance_layout.addRow(self.virtual_scroll_checkbox)
         
         # 缓存大小
-        performance_layout.addRow("缓存大小(MB):", self._create_cache_size_spin())
+        self.cache_size_spin = self._create_cache_size_spin()
+        performance_layout.addRow("缓存大小(MB):", self.cache_size_spin)
         
         self.tab_widget.addTab(performance_tab, "性能")
 
@@ -314,5 +332,32 @@ class SettingsDialog(QDialog):
 
     def reset_to_default(self):
         """重置为默认设置"""
-        # 这里需要重置所有控件到默认值
-        pass
+        # 重置常规设置
+        self.language_combo.setCurrentText('简体中文')
+        self.theme_combo.setCurrentText('亮色主题')
+        self.startup_combo.setCurrentText('显示欢迎屏幕')
+        self.auto_save_checkbox.setChecked(True)
+        self.auto_save_interval_spin.setValue(5)
+        self.recent_files_spin.setValue(10)
+        self.decimal_places_spin.setValue(2)
+        
+        # 重置外观设置
+        self.font_size_spin.setValue(14)
+        self.font_combo.setCurrentText('Microsoft YaHei')
+        self.zoom_combo.setCurrentText('100%')
+        
+        # 重置数据设置
+        self.default_rows_spin.setValue(100)
+        self.default_cols_spin.setValue(20)
+        self.decimal_separator_combo.setCurrentText('.')
+        self.thousand_separator_combo.setCurrentText(',')
+        
+        # 重置输出设置
+        self.chart_format_combo.setCurrentText('PNG')
+        self.chart_dpi_spin.setValue(300)
+        self.table_format_combo.setCurrentText('HTML')
+        
+        # 重置性能设置
+        self.max_threads_spin.setValue(4)
+        self.virtual_scroll_checkbox.setChecked(True)
+        self.cache_size_spin.setValue(100)
