@@ -30,18 +30,18 @@ class AxaltyXMainWindow(QMainWindow):
         self.settings = AppSettings()
         self.theme_manager = ThemeManager()
         
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+        self.setMinimumSize(1024, 600)
+        self.setGeometry(100, 100, 1280, 800)
+        self.title_bar = AxaltyXTitleBar(self)
+        self.init_ui()
+        
         # 初始化桥接控制器
         from src.axaltyx_bridge.controller import BridgeController
         self.bridge = BridgeController()
         
         # 连接桥接信号
         self._connect_bridge_signals()
-        
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
-        self.setMinimumSize(1024, 600)
-        self.setGeometry(100, 100, 1280, 800)
-        self.title_bar = AxaltyXTitleBar(self)
-        self.init_ui()
 
     def init_ui(self) -> None:
         # 设置主窗口布局
@@ -606,24 +606,22 @@ class AxaltyXMainWindow(QMainWindow):
     def _connect_bridge_signals(self):
         """连接桥接控制器信号"""
         # 数据信号
-        self.bridge.signals.sig_data_loaded.connect(self._on_data_loaded)
-        self.bridge.signals.sig_data_saved.connect(self._on_data_saved)
-        self.bridge.signals.sig_data_created.connect(self._on_data_created)
-        self.bridge.signals.sig_data_error.connect(self._on_data_error)
+        self.bridge.signals.sig_data_load_completed.connect(self._on_data_loaded)
+        self.bridge.signals.sig_data_save_completed.connect(self._on_data_saved)
+        self.bridge.signals.sig_data_new_completed.connect(self._on_data_created)
         
         # 分析信号
         self.bridge.signals.sig_analysis_started.connect(self._on_analysis_started)
         self.bridge.signals.sig_analysis_completed.connect(self._on_analysis_completed)
-        self.bridge.signals.sig_analysis_error.connect(self._on_analysis_error)
+        self.bridge.signals.sig_analysis_failed.connect(self._on_analysis_error)
         
         # 图表信号
         self.bridge.signals.sig_chart_created.connect(self._on_chart_created)
-        self.bridge.signals.sig_chart_error.connect(self._on_chart_error)
         
         # UI信号
-        self.bridge.signals.sig_language_updated.connect(self._on_language_updated)
-        self.bridge.signals.sig_theme_updated.connect(self._on_theme_updated)
-        self.bridge.signals.sig_settings_updated.connect(self._on_settings_updated)
+        self.bridge.signals.sig_language_changed.connect(self._on_language_updated)
+        self.bridge.signals.sig_theme_changed.connect(self._on_theme_updated)
+        self.bridge.signals.sig_settings_changed.connect(self._on_settings_updated)
         
         # 状态信号
         self.bridge.signals.sig_status_message.connect(self.update_status)

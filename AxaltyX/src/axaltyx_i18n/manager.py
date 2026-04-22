@@ -57,6 +57,10 @@ class I18nManager:
         Args:
             lang_code: 语言代码，如 'zh_CN', 'en_US'
         """
+        # 防止无限递归
+        if lang_code == self.current_language:
+            return
+            
         lang_file = self.locales_dir / f"{lang_code}.json"
 
         if lang_file.exists():
@@ -69,11 +73,15 @@ class I18nManager:
                 # 加载失败时尝试回退语言
                 if lang_code != self.fallback_language:
                     print(f"Falling back to {self.fallback_language}")
-                    self.load_language(self.fallback_language)
+                    # 防止无限递归
+                    if self.fallback_language != self.current_language:
+                        self.load_language(self.fallback_language)
         else:
             print(f"Warning: Language file not found: {lang_file}")
             if lang_code != self.fallback_language:
-                self.load_language(self.fallback_language)
+                # 防止无限递归
+                if self.fallback_language != self.current_language:
+                    self.load_language(self.fallback_language)
 
     def get_text(self, key: str, **kwargs) -> str:
         """
